@@ -1,4 +1,4 @@
-package com.springstudy.backend.Common;
+package com.springstudy.backend.Common.ErrorCode;
 
 import lombok.NoArgsConstructor;
 

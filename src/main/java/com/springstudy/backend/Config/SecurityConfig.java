@@ -16,8 +16,9 @@ public class SecurityConfig {
     //SecurityFilterChain: spring security가 요청을 처리할 때 이용하는 필터.
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/swagger-ui/**", "/v3/api-docs/**"))
+//                .csrf(csrf -> csrf.ignoringRequestMatchers("/swagger-ui/**", "/v3/api-docs/**"))
                 // csrf 기능을 비활성화한다.
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authorize) ->
                         authorize.requestMatchers("/**").permitAll()
                 );
