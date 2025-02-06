@@ -13,7 +13,7 @@ public class UserCredentional {
 
     @Id
     @OneToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userid")
     private User user;
 
     @Column(nullable = false)

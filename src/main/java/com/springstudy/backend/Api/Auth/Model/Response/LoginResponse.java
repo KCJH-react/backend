@@ -1,13 +1,12 @@
 package com.springstudy.backend.Api.Auth.Model.Response;
 
-import com.springstudy.backend.Common.ErrorCode.CustomException;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-@Schema(description = "회원 가입 응답")
-public record CreateUserResponse (
+@Schema(description = "로그인 응답")
+public record LoginResponse (
         @NotNull
         @NotBlank
         @Schema(description = "성공 여부")
