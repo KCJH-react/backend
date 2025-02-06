@@ -32,11 +32,14 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+            # 라이브러리 캐시 삭제
 
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
           ./gradlew clean build
+          # 빌드 jar 삭제 및 새빌드
 
       - name: Run tests
         run: ./gradlew test
+        # 테스트
