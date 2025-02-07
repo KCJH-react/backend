@@ -1,23 +1,22 @@
 package com.springstudy.backend.Api.Auth.Service;
 
-import com.springstudy.backend.Api.Repoitory.Entity.AuthUser;
+import com.springstudy.backend.Api.Auth.Model.AuthUser;
 import com.springstudy.backend.Api.Repoitory.Entity.User;
 import com.springstudy.backend.Api.Repoitory.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-//import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class MyUserDetailsService implements UserDetailsService {
@@ -28,9 +27,8 @@ public class MyUserDetailsService implements UserDetailsService {
         Optional<User> user = userRepository.findByUsername(username);
         if(user.isEmpty()){
             //todo error
-            //throw new UsernameNotFoundException(username);
         }
-        com.springstudy.backend.Api.Repoitory.Entity.User member = user.get();
+        User member = user.get();
         List<GrantedAuthority> authorityList = new ArrayList<>();
         authorityList.add(new SimpleGrantedAuthority("일반유저"));
         // User 객체는 권한 정보가 있어야 된다.
@@ -38,11 +36,6 @@ public class MyUserDetailsService implements UserDetailsService {
                 authorityList, member.getUserid(), member.getEmail());
         // Authentication 객체와 비교할 대상.
     }
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-    // 스프링시큐리티에서 자동적으로 비밀번호를 암호화 시킨다.
 }
 //UserDetailsService 인터페이스는 기본적으로 loadUserByUsername 메소드 하나만 정의되어 있습니다.
 //이 메소드는 사용자의 이름(주로 이메일이나 사용자 이름)을

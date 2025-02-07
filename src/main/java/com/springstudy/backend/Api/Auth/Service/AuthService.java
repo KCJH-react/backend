@@ -1,16 +1,15 @@
 package com.springstudy.backend.Api.Auth.Service;
-
 import com.springstudy.backend.Api.Auth.Model.Request.CreateUserRequest;
 import com.springstudy.backend.Api.Auth.Model.Request.LoginRequest;
 import com.springstudy.backend.Api.Auth.Model.Response.CreateUserResponse;
 import com.springstudy.backend.Api.Auth.Model.Response.LoginResponse;
-import com.springstudy.backend.Api.Repoitory.Entity.AuthUser;
 import com.springstudy.backend.Api.Repoitory.Entity.User;
 import com.springstudy.backend.Api.Repoitory.Entity.UserCredentional;
 import com.springstudy.backend.Api.Repoitory.UserRepository;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
 import com.springstudy.backend.Common.Hash.Hasher;
 import com.springstudy.backend.Common.JWTUtil;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -81,12 +81,34 @@ public class AuthService {
             //todo error
         }
 
-        var authentication = new UsernamePasswordAuthenticationToken(user.get().getUsername(),request.password());
+        try{
+            authUser(user.get().getUsername(),request.password());
+        }
+        catch(AuthenticationException e) {
+            //todo error
+        }
+
+        try{
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if(auth == null){
+                //todo error
+            }
+            String jwt = JWTUtil.createToken(auth);
+            Cookie cookie= createCookie(jwt);
+            response.addCookie(cookie);
+        }
+        catch(JwtException e) {
+            //todo error
+        }
+
+        return new LoginResponse(ErrorCode.SUCCESS);
+    }
+    private void authUser(String username, String password) throws AuthenticationException {
+        var authentication = new UsernamePasswordAuthenticationToken(username,password);
         Authentication auth = authenticationManagerBuilder.getObject().authenticate(authentication);
         SecurityContextHolder.getContext().setAuthentication(auth);
-
-        String jwt = JWTUtil.createToken(SecurityContextHolder.getContext().getAuthentication());
-
+    }
+    private Cookie createCookie(String jwt){
         Cookie cookie = new Cookie("jwt", jwt);
         cookie.setMaxAge(10);
         // 만료기간 10초로 설정한다.
@@ -94,9 +116,6 @@ public class AuthService {
         // xss 공격을 방지한다.
         cookie.setPath("/");
         // 모든 경로에서 쿠키를 전달한다.
-        response.addCookie(cookie);
-        // 쿠키를 요청 시 삽입한다.
-
-        return new LoginResponse(ErrorCode.SUCCESS);
+        return cookie;
     }
 }

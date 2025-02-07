@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -17,7 +19,6 @@ public class SecurityConfig {
     //SecurityFilterChain: spring security가 요청을 처리할 때 이용하는 필터.
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-//                .csrf(csrf -> csrf.ignoringRequestMatchers("/swagger-ui/**", "/v3/api-docs/**"))
                 // csrf 기능을 비활성화한다.
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authorize) ->
@@ -31,4 +32,10 @@ public class SecurityConfig {
         return http.build();
         // SecurityFilterChain을 반환.
     }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+    // 스프링시큐리티에서 자동적으로 비밀번호를 암호화 시킨다.
 }
