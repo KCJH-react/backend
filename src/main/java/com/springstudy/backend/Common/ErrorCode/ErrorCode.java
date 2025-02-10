@@ -10,7 +10,9 @@ public enum ErrorCode implements CodeInterface{
     USER_ALREADY_EXISTS(-1, "USER_ALREADY_EXISTS"),
     USER_CREATE_FAILED(-2,"USER_CREATE_FAILED"),
     NOT_EXIST_USER(-3, "NOT_EXIST_USER"),
-    MISMATCH_PASSWORD(-4, "MISMATCH_PASSWORD");
+    MISMATCH_PASSWORD(-4, "MISMATCH_PASSWORD"),
+    FAILURE(-5,"FAILURE");
+
     private final Integer code;
     private final String message;
 }
