@@ -33,6 +33,6 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: 도커 이미지 푸쉬
-        run: docker push first-test-app
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/first-test-app
 
-        #도커 6차 테스트 외 않뎀
+        #도커 7차
