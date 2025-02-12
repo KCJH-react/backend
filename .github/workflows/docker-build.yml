@@ -25,9 +25,9 @@ jobs:
 
       - name: .env 파일을 사용해 환경 변수 설정
         run: |
-          if [ -f .env ]; then
-            echo "DOCKER_USERNAME=$(cat .env | grep DOCKER_USERNAME | cut -d '=' -f2)" >> $GITHUB_ENV
-            echo "DOCKER_PASSWORD=$(cat .env | grep DOCKER_PASSWORD | cut -d '=' -f2)" >> $GITHUB_ENV
+          if [ -f $GITHUB_WORKSPACE/.env ]; then
+            echo "DOCKER_USERNAME=$(cat $GITHUB_WORKSPACE/.env | grep DOCKER_USERNAME | cut -d '=' -f2)" >> $GITHUB_ENV
+            echo "DOCKER_PASSWORD=$(cat $GITHUB_WORKSPACE/.env | grep DOCKER_PASSWORD | cut -d '=' -f2)" >> $GITHUB_ENV
           else
             echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> $GITHUB_ENV
             echo "DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}" >> $GITHUB_ENV
