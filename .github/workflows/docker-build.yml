@@ -45,4 +45,4 @@ jobs:
       - name: 도커 이미지 푸쉬
         run: docker push ${{ env.DOCKER_USERNAME }}/first-test-app
 
-        #임시
+        #임시2
