@@ -1,6 +1,6 @@
-package com.springstudy.backend.Ranking.Repository;
+package com.springstudy.backend.Api.Repoitory;
 
-import com.springstudy.backend.Ranking.Model.Entity.Ranking;
+import com.springstudy.backend.Api.Repoitory.Entity.Ranking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;

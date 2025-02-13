@@ -1,4 +1,4 @@
-package com.springstudy.backend.Ranking.Model.Entity;
+package com.springstudy.backend.Api.Repoitory.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;

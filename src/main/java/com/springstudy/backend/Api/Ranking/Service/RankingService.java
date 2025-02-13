@@ -1,10 +1,10 @@
-package com.springstudy.backend.Ranking.Service;
+package com.springstudy.backend.Api.Ranking.Service;
 
-import com.springstudy.backend.Ranking.Model.Request.SubmitScoreRequest;
-import com.springstudy.backend.Ranking.Model.Response.RankingResponse;
-import com.springstudy.backend.Ranking.Model.Response.SubmitScoreResponse;
-import com.springstudy.backend.Ranking.Model.Entity.Ranking;
-import com.springstudy.backend.Ranking.Repository.RankingRepository;
+import com.springstudy.backend.Api.Ranking.Model.Request.SubmitScoreRequest;
+import com.springstudy.backend.Api.Ranking.Model.Response.RankingResponse;
+import com.springstudy.backend.Api.Ranking.Model.Response.SubmitScoreResponse;
+import com.springstudy.backend.Api.Ranking.Model.Entity.Ranking;
+import com.springstudy.backend.Api.Repoitory.RankingRepository;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
 import com.springstudy.backend.Api.Auth.Model.AuthUser;
 import lombok.RequiredArgsConstructor;
