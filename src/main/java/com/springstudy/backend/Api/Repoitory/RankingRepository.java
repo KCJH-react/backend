@@ -8,6 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface RankingRepository extends JpaRepository<Ranking, Long> {
-    List<Ranking> findTop10ByOrderByScoreDesc(); // ✅ 상위 10명 랭킹 조회
-    Optional<Ranking> findByUserid(String userid); // ✅ 사용자 ID로 랭킹 정보 조회
+    List<Ranking> findTop10ByOrderByScoreDesc();
+    Optional<Ranking> findByUserid(String userid);
 }
