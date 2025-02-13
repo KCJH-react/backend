@@ -10,6 +10,17 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect  # ??? ??
         ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: verify0213@gmail.com
+    password: ceip atbk wtff yufc
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 server.port: 8020
 springdoc:
   swagger-ui:
