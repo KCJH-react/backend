@@ -1,6 +1,7 @@
 package com.springstudy.backend.Api.Gemini.Controller;
 
 import com.springstudy.backend.Api.Gemini.Service.GeminiService;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +15,7 @@ public class GeminiController {
     }
 
     @PostMapping("/chat")
-    public String chat(@RequestBody String message) {
-        return geminiService.chatGemini(message);
+    public String chat(@RequestBody String message, Authentication auth) {
+        return geminiService.chatGemini(message, auth);
     }
 }

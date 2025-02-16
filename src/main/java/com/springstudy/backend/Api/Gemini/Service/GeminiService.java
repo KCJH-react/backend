@@ -1,9 +1,13 @@
 package com.springstudy.backend.Api.Gemini.Service;
 
+import com.springstudy.backend.Api.Auth.Model.AuthUser;
 import com.springstudy.backend.Api.Gemini.Model.Request.GeminiReqDto;
 import com.springstudy.backend.Api.Gemini.Model.Response.GeminiResDto;
+import com.springstudy.backend.Api.Repoitory.ChallengeRepository;
+import com.springstudy.backend.Api.Repoitory.Entity.Challenge;
 import com.springstudy.backend.Common.ErrorCode.CustomException;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
+import com.springstudy.backend.Common.RedisService;
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
 import freemarker.template.MalformedTemplateNameException;
@@ -11,12 +15,14 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,11 +31,13 @@ import java.util.Map;
 public class GeminiService {
     private final RestTemplate restTemplate;
     private final Configuration freemarkerConfig;
+    private final RedisService redisService;
+    private final ChallengeRepository challengeRepository;
 
     @Value("${gemini.url}")
     private String geminiURL;
 
-    public String chatGemini(String subject){
+    public String chatGemini(String subject, Authentication auth){
         GeminiResDto response;
         try{
             GeminiReqDto request = createRequest(subject);
@@ -39,6 +47,14 @@ public class GeminiService {
             throw new CustomException(ErrorCode.RESTTEMPLATE_REQUEST_ERROR);
         }
         String result = response.getCandidates().get(0).getContent().getParts().get(0).getText();
+        // challenge 레포 저장.
+        // 1. result 정보 추출. 챌린지, 제한시간, 챌린지 생성일.
+        // 3. challenge redis에 만료시간 저장.
+        // 4. challenge repo에 저장.
+
+        String[] split = result.split(":");
+        saveChallenge(split);
+        saveRedisLimitTime(split, auth);
 
         return result;
     }
@@ -72,5 +88,27 @@ public class GeminiService {
         GeminiReqDto request = new GeminiReqDto();
         request.createGeminiReqDto(requestText);
         return request;
+    }
+
+    public void saveChallenge(String[] split){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Challenge challenge = Challenge.builder()
+                .challengeTitle(split[0])
+                .limitTime(split[1])
+                .current(localDateTime)
+                .build();
+        Challenge save = challengeRepository.save(challenge);
+        if(save == null){
+            //todo error
+        }
+    }
+    public void saveRedisLimitTime(String[] split,Authentication auth){
+//        AuthUser user = (AuthUser) auth.getPrincipal();
+//        if(auth == null){
+//            throw new CustomException(ErrorCode.NOT_LOGIN);
+//        }
+        String sample = "sample@gmail.com";
+        redisService.setDataExpire(sample,split[0], Long.parseLong(split[1].trim()));
+        System.out.println(sample+": "+redisService.getData(sample)+redisService.getExpire(sample));
     }
 }
