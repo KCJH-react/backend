@@ -22,13 +22,13 @@ public class RedisService {
     }
     public void setDataExpire(String key,String value,long duration){//지정된 키(key)에 값을 저장하고, 지정된 시간(duration) 후에 데이터가 만료되도록 설정하는 메서드
         ValueOperations<String,String> valueOperations=redisTemplate.opsForValue();
-        Duration expireDuration=Duration.ofSeconds(duration);
+        Duration expireDuration=Duration.ofMinutes(duration);
         valueOperations.set(key,value,expireDuration);
     }
     public Long getExpire(String key){
         return redisTemplate.getExpire(key);
     }
-    public void deleteData(String key){//지정된 키(key)에 해당하는 데이터를 Redis에서 삭제하는 메서드
-        redisTemplate.delete(key);
+    public boolean deleteData(String key){//지정된 키(key)에 해당하는 데이터를 Redis에서 삭제하는 메서드
+        return redisTemplate.delete(key);
     }
 }

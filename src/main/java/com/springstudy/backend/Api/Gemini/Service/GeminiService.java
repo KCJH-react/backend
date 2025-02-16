@@ -15,6 +15,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
@@ -33,11 +34,15 @@ public class GeminiService {
     private final Configuration freemarkerConfig;
     private final RedisService redisService;
     private final ChallengeRepository challengeRepository;
+    String sample = "sample@gmail.com"; // 테스트 단계에서만.
 
     @Value("${gemini.url}")
     private String geminiURL;
 
     public String chatGemini(String subject, Authentication auth){
+        // challenge 생성.
+        // 1. subject 입력받음.
+        // 2. gemini에 전달해서 랜덤 챌린지 생성.
         GeminiResDto response;
         try{
             GeminiReqDto request = createRequest(subject);
@@ -53,8 +58,13 @@ public class GeminiService {
         // 4. challenge repo에 저장.
 
         String[] split = result.split(":");
-        saveChallenge(split);
-        saveRedisLimitTime(split, auth);
+        try{
+            saveChallenge(split);
+            saveRedisLimitTime(split, auth);
+        }
+        catch(DataAccessException e){
+            throw new CustomException(ErrorCode.ERROR_REDIS_ACCESS);
+        }
 
         return result;
     }
@@ -90,7 +100,7 @@ public class GeminiService {
         return request;
     }
 
-    public void saveChallenge(String[] split){
+    public void saveChallenge(String[] split) throws DataAccessException {
         LocalDateTime localDateTime = LocalDateTime.now();
         Challenge challenge = Challenge.builder()
                 .challengeTitle(split[0])
@@ -102,13 +112,46 @@ public class GeminiService {
             //todo error
         }
     }
-    public void saveRedisLimitTime(String[] split,Authentication auth){
+    public void saveRedisLimitTime(String[] split,Authentication auth) throws DataAccessException{
 //        AuthUser user = (AuthUser) auth.getPrincipal();
 //        if(auth == null){
 //            throw new CustomException(ErrorCode.NOT_LOGIN);
 //        }
-        String sample = "sample@gmail.com";
-        redisService.setDataExpire(sample,split[0], Long.parseLong(split[1].trim()));
+        try{
+            redisService.setDataExpire(sample,split[0], Long.parseLong(split[1].trim().replaceAll("[^0-9]", "")));
+        }
+        catch (NumberFormatException e){
+            throw new CustomException(ErrorCode.NUMBER_FORMAT_ERROR);
+        }
         System.out.println(sample+": "+redisService.getData(sample)+redisService.getExpire(sample));
+    }
+
+    public ErrorCode clearChallenge(String challenge,Authentication auth){
+        // 챌린지 확인.
+        // 1. redis에서 현재 사용자와 챌린지로 확인.
+        // 2. 있으면 redis에서 삭제하고 성공 처리.
+        try{
+            String redisChallenge = redisService.getData(sample);
+//            System.out.println("전"+redisChallenge.trim()+":"+challenge.equals(redisChallenge.trim()));
+//            if(!challenge.trim().equals(redisChallenge.trim())){
+//                throw new CustomException(ErrorCode.NOT_EXIST_CHALLENGE);
+//            }
+
+            boolean deleted = redisService.deleteData(sample);
+            System.out.println("삭제확인: "+deleted);
+            if(!deleted){
+                throw new CustomException(ErrorCode.NOT_DELETE_CHALLENGE);
+            }
+        }
+        catch (DataAccessException e){
+            throw new CustomException(ErrorCode.ERROR_REDIS_ACCESS);
+        }
+        catch (Exception e) {
+            //throw new CustomException(e.getMessage(), ErrorCode.FAILURE);
+            System.out.println(e.getMessage()+"\n"+e.toString());
+        }
+
+        System.out.println("Redis 삭제 후 확인: " + redisService.getData(sample));
+        return ErrorCode.SUCCESS;
     }
 }
