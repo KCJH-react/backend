@@ -1,0 +1,32 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: jdbc:mysql://localhost:3306/challenge
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect  # ??? ??
+        ddl-auto: update
+  ai:
+    vertex:
+      ai:
+        gemini:
+          projectId: gen-lang-client-0903210999
+          location: asia-northeast3
+server.port: 8020
+springdoc:
+  swagger-ui:
+    enabled: true
+    operations-sorter: method
+token: # ??? ????
+  secret-key: "SECRET"
+  refresh-secret-key: "REFRESH_SECRET"
+  token-time: 300
+  refresh-token-time: 500
+gemini:
+  url: ${GEMINI}
