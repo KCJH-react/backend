@@ -5,13 +5,17 @@ import com.springstudy.backend.Api.Gemini.Model.Response.GeminiResDto;
 import com.springstudy.backend.Common.ErrorCode.CustomException;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
 import freemarker.core.ParseException;
-import freemarker.template.*;
+import freemarker.template.Configuration;
+import freemarker.template.MalformedTemplateNameException;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +27,7 @@ public class GeminiService {
     private final Configuration freemarkerConfig;
 
     @Value("${gemini.url}")
-    String geminiURL;
+    private String geminiURL;
 
     public String chatGemini(String subject){
         GeminiResDto response;
@@ -60,12 +64,13 @@ public class GeminiService {
             throw new CustomException(ErrorCode.TEMPLATE_VARIABLE_ERROR);
         }
         catch(IOException e){
-            throw new CustomException(e.getMessage(),ErrorCode.TEMPLATE_IO_ERROR);
+            throw new CustomException(ErrorCode.TEMPLATE_IO_ERROR);
         }
-        finally {
-            GeminiReqDto request = new GeminiReqDto();
-            request.createGeminiReqDto(requestText);
-            return request;
+        if(requestText.equals("")){
+            throw new CustomException(ErrorCode.RESPONSE_NULL);
         }
+        GeminiReqDto request = new GeminiReqDto();
+        request.createGeminiReqDto(requestText);
+        return request;
     }
 }
