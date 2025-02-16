@@ -27,7 +27,7 @@ public class GeminiService {
     private final Configuration freemarkerConfig;
 
     @Value("${gemini.url}")
-    String geminiURL;
+    private String geminiURL;
 
     public String chatGemini(String subject){
         GeminiResDto response;
@@ -36,8 +36,7 @@ public class GeminiService {
             response = restTemplate.postForObject(geminiURL, request, GeminiResDto.class);
         }catch (RestClientException e){ // RESTTEMPLATE으로 HTTP 요청 시 발생할 수 있는 에러가 발생한 경우.
             System.out.println(e.getMessage());
-            //throw new CustomException(ErrorCode.RESTTEMPLATE_REQUEST_ERROR);
-            throw new RuntimeException(e.getMessage());
+            throw new CustomException(ErrorCode.RESTTEMPLATE_REQUEST_ERROR);
         }
         String result = response.getCandidates().get(0).getContent().getParts().get(0).getText();
 
@@ -56,21 +55,22 @@ public class GeminiService {
             requestText = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
         }
         catch (ParseException e){ // 템플릿에 문법 오류가 있을 때.
-            //throw new CustomException(ErrorCode.TEMPLATE_PARSEERROR);
+            throw new CustomException(ErrorCode.TEMPLATE_PARSEERROR);
         }
         catch(MalformedTemplateNameException e){ // 템플릿 이름이 잘못되었을 때.
-            //throw new CustomException(ErrorCode.TEMPLATE_NAME_ERROR);
+            throw new CustomException(ErrorCode.TEMPLATE_NAME_ERROR);
         }
         catch(TemplateException e){ // 템플릿 변수가 제대로 치환되지 않을 때.
-            //throw new CustomException(ErrorCode.TEMPLATE_VARIABLE_ERROR);
+            throw new CustomException(ErrorCode.TEMPLATE_VARIABLE_ERROR);
         }
         catch(IOException e){
-            //throw new CustomException(e.getMessage(),ErrorCode.TEMPLATE_IO_ERROR);
+            throw new CustomException(ErrorCode.TEMPLATE_IO_ERROR);
         }
-        finally {
-            GeminiReqDto request = new GeminiReqDto();
-            request.createGeminiReqDto(requestText);
-            return request;
+        if(requestText.equals("")){
+            throw new CustomException(ErrorCode.RESPONSE_NULL);
         }
+        GeminiReqDto request = new GeminiReqDto();
+        request.createGeminiReqDto(requestText);
+        return request;
     }
 }
