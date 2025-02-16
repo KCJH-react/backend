@@ -25,6 +25,9 @@ public class RedisService {
         Duration expireDuration=Duration.ofSeconds(duration);
         valueOperations.set(key,value,expireDuration);
     }
+    public Long getExpire(String key){
+        return redisTemplate.getExpire(key);
+    }
     public void deleteData(String key){//지정된 키(key)에 해당하는 데이터를 Redis에서 삭제하는 메서드
         redisTemplate.delete(key);
     }

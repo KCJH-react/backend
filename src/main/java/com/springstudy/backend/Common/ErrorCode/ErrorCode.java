@@ -12,6 +12,7 @@ public enum ErrorCode implements CodeInterface{
     NOT_EXIST_USER(-3, "NOT_EXIST_USER"),
     MISMATCH_PASSWORD(-4, "MISMATCH_PASSWORD"),
     FAILURE(-5,"FAILURE"),
+    NOT_LOGIN(-6,"NOT_LOGIN"),
 
     // gemini 기능 에러
     TEMPLATE_PARSEERROR(-6,"TEMPLATE_PARSEERROR"),
