@@ -33,7 +33,7 @@ public class MyUserDetailsService implements UserDetailsService {
         authorityList.add(new SimpleGrantedAuthority("일반유저"));
         // User 객체는 권한 정보가 있어야 된다.
         return new AuthUser(member.getUsername(), member.getUser_credentional().getPassword(),
-                authorityList, member.getUserid(), member.getEmail());
+                authorityList, member.getEmail());
         // Authentication 객체와 비교할 대상.
     }
 }

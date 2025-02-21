@@ -60,7 +60,8 @@ public class RankingService {
 
         Object principal = authentication.getPrincipal();
         if (principal instanceof AuthUser authUser) {
-            return authUser.getUserId();
+            //return authUser.getUserId();
+            return "id";
         } else {
             throw new RuntimeException("유효하지 않은 사용자 정보입니다.");
         }

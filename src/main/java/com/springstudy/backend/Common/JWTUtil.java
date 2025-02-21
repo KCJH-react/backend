@@ -22,7 +22,6 @@ public class JWTUtil {
         AuthUser user = (AuthUser) auth.getPrincipal();
 
         String jwt = Jwts.builder()
-                .claim("userId", user.getUserId())
                 .claim("displayName", user.getUsername())
                 // .claim CustomUser 정보를 저장하는 메소드.
                 // .claim: 저장할 정보 추가.
