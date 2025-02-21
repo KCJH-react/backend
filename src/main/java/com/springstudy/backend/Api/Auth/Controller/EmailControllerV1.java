@@ -1,25 +1,24 @@
 package com.springstudy.backend.Api.Auth.Controller;
 
 import com.springstudy.backend.Api.Auth.Model.Request.EmailRequest;
+import com.springstudy.backend.Api.Auth.Model.Request.EmailVerifyRequest;
 import com.springstudy.backend.Api.Auth.Service.EmailService;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@RestController("/api/v1/email")
+@RestController
+@RequestMapping ("api/v1/email")
 @RequiredArgsConstructor
 public class EmailControllerV1 {
     public final EmailService emailService;
     @PostMapping("/send")
-    public ErrorCode sendEmail(@RequestParam @Valid String email) {
-        return emailService.sendMail(email);
+    public ErrorCode sendEmail(@RequestParam @Valid EmailRequest emailRequest) {
+        return emailService.sendMail(emailRequest);
     }
     @PostMapping("/check")
-    public ErrorCode checkEmail(@RequestBody @Valid EmailRequest emailRequest) {
+    public ErrorCode checkEmail(@RequestBody @Valid EmailVerifyRequest emailRequest) {
         return emailService.CheckAuthNum(emailRequest);
     }
 }

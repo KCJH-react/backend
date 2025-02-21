@@ -10,15 +10,12 @@ import java.util.List;
 @Getter
 public class AuthUser extends User {
     private String email;
-    private String userId;
 
     public AuthUser(String username, String password,
                       List<GrantedAuthority> authorities,
-                      String userId,
                       String email){
         super(username, password, authorities);
         this.email = email;
-        this.userId = userId;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.springstudy.backend.Api.Auth.Service;
 
 import com.springstudy.backend.Api.Auth.Model.Request.EmailRequest;
+import com.springstudy.backend.Api.Auth.Model.Request.EmailVerifyRequest;
 import com.springstudy.backend.Common.ErrorCode.CustomException;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
 import com.springstudy.backend.Common.RedisService;
@@ -8,7 +9,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -48,9 +48,9 @@ public class EmailService {
         return message;
     }
 
-    public ErrorCode sendMail(String mail) {
+    public ErrorCode sendMail(EmailRequest emailRequest) {
         try{
-            MimeMessage message = CreateMail(mail);
+            MimeMessage message = CreateMail(emailRequest.email());
             javaMailSender.send(message);
         }
         catch(MessagingException e){
@@ -66,7 +66,7 @@ public class EmailService {
     }
 
     //추가 되었다.
-    public ErrorCode CheckAuthNum(EmailRequest emailRequest){
+    public ErrorCode CheckAuthNum(EmailVerifyRequest emailRequest){
         String authNum = emailRequest.authnum();
         String email = emailRequest.email();
         String storedEmail = redisUtil.getData(authNum);

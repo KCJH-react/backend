@@ -151,6 +151,7 @@ public class GeminiService {
             System.out.println(e.getMessage()+"\n"+e.toString());
         }
 
+
         System.out.println("Redis 삭제 후 확인: " + redisService.getData(sample));
         return ErrorCode.SUCCESS;
     }

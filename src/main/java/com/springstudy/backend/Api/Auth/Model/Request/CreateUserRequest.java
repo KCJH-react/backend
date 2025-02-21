@@ -6,10 +6,6 @@ import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "회원 가입 요청")
 public record CreateUserRequest (
-        @NotNull
-        @NotBlank
-        @Schema(description = "회원가입 아이디")
-        String userid,
 
         @NotNull
         @NotBlank
