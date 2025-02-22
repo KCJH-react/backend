@@ -1,4 +1,5 @@
 package com.springstudy.backend.Api.Auth.Service;
+import com.springstudy.backend.Api.Auth.Model.AuthUser;
 import com.springstudy.backend.Api.Auth.Model.Request.CreateUserRequest;
 import com.springstudy.backend.Api.Auth.Model.Request.LoginRequest;
 import com.springstudy.backend.Api.Auth.Model.Response.CreateUserResponse;
@@ -10,8 +11,10 @@ import com.springstudy.backend.Common.ErrorCode.CustomException;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
 import com.springstudy.backend.Common.Hash.Hasher;
 import com.springstudy.backend.Common.JWTUtil;
+import com.springstudy.backend.Common.RedisService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +34,7 @@ import java.util.Optional;
 public class AuthService {
     private final UserRepository userRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final RedisService redisService;
 
     public CreateUserResponse createUser(CreateUserRequest request) {
         // 1. 동일 이메일 있나 확인.
@@ -94,8 +98,12 @@ public class AuthService {
                 throw new CustomException(ErrorCode.AUTH_SAVE_ERROR);
             }
             String jwt = JWTUtil.createToken(auth);
-            Cookie cookie= createCookie(jwt);
+            String refreshJwt = JWTUtil.createRefreshToken(auth);
+            redisService.setDataExpire("refresh_token: "+((AuthUser)auth.getPrincipal()).getUsername(), refreshJwt, 3600000);
+            Cookie cookie= createCookie("jwt",jwt);
+            Cookie refreshCookie= createCookie("refreshJwt",refreshJwt);
             response.addCookie(cookie);
+            response.addCookie(refreshCookie);
         }
         catch(JwtException e) {
             //todo error
@@ -120,8 +128,8 @@ public class AuthService {
         throw new CustomException(ErrorCode.MISMATCH_PASSWORD);
     }
     }
-    private Cookie createCookie(String jwt){
-        Cookie cookie = new Cookie("jwt", jwt);
+    private Cookie createCookie(String name, String jwt){
+        Cookie cookie = new Cookie(name, jwt);
         cookie.setHttpOnly(true);   // XSS 공격 방지
         cookie.setSecure(true);     // HTTPS 환경에서만 쿠키 전달 -> 배포시 true 해야 됨.
         cookie.setPath("/");        // 전체 경로에서 쿠키 사용 가능
