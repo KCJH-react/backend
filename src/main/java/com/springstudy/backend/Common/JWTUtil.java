@@ -27,7 +27,7 @@ public class JWTUtil {
                 // .claim: 저장할 정보 추가.
                 .issuedAt(new Date(System.currentTimeMillis()))
                 // .issuedAt: 생성날짜를 생성하는 메소드.
-                .expiration(new Date(System.currentTimeMillis() + 10000)) //유효기간 10초
+                .expiration(new Date(System.currentTimeMillis() + 3600000)) //유효기간 1시간
                 // .expiration: 만료기간을 설정하는 메소드.
                 .signWith(key)
                 .compact();

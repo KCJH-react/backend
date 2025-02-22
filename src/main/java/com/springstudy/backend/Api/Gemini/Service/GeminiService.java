@@ -1,6 +1,5 @@
 package com.springstudy.backend.Api.Gemini.Service;
 
-import com.springstudy.backend.Api.Auth.Model.AuthUser;
 import com.springstudy.backend.Api.Gemini.Model.Request.GeminiReqDto;
 import com.springstudy.backend.Api.Gemini.Model.Response.GeminiResDto;
 import com.springstudy.backend.Api.Repoitory.ChallengeRepository;
@@ -16,7 +15,6 @@ import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.client.RestClientException;
@@ -39,7 +37,7 @@ public class GeminiService {
     @Value("${gemini.url}")
     private String geminiURL;
 
-    public String chatGemini(String subject, Authentication auth){
+    public String chatGemini(String subject){
         // challenge 생성.
         // 1. subject 입력받음.
         // 2. gemini에 전달해서 랜덤 챌린지 생성.
@@ -60,7 +58,7 @@ public class GeminiService {
         String[] split = result.split(":");
         try{
             saveChallenge(split);
-            saveRedisLimitTime(split, auth);
+            saveRedisLimitTime(split);
         }
         catch(DataAccessException e){
             throw new CustomException(ErrorCode.ERROR_REDIS_ACCESS);
@@ -112,11 +110,7 @@ public class GeminiService {
             //todo error
         }
     }
-    public void saveRedisLimitTime(String[] split,Authentication auth) throws DataAccessException{
-//        AuthUser user = (AuthUser) auth.getPrincipal();
-//        if(auth == null){
-//            throw new CustomException(ErrorCode.NOT_LOGIN);
-//        }
+    public void saveRedisLimitTime(String[] split) throws DataAccessException{
         try{
             redisService.setDataExpire(sample,split[0], Long.parseLong(split[1].trim().replaceAll("[^0-9]", "")));
         }
@@ -126,7 +120,7 @@ public class GeminiService {
         System.out.println(sample+": "+redisService.getData(sample)+redisService.getExpire(sample));
     }
 
-    public ErrorCode clearChallenge(String challenge,Authentication auth){
+    public ErrorCode clearChallenge(String challenge){
         // 챌린지 확인.
         // 1. redis에서 현재 사용자와 챌린지로 확인.
         // 2. 있으면 redis에서 삭제하고 성공 처리.
