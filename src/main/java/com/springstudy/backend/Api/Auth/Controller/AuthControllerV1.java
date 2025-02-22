@@ -24,7 +24,9 @@ public class AuthControllerV1 {
         return authService.createUser(createUserRequest);
     }
     @PostMapping("/login")
-    public LoginResponse Login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse) {
+    public LoginResponse Login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse
+    , HttpServletRequest httpServletRequest) {
+        System.out.println(httpServletRequest.getCookies());
         return authService.login(httpServletResponse, loginRequest);
     }
 }

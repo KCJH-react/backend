@@ -22,6 +22,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Optional;
 
 @Service
@@ -109,6 +110,9 @@ public class AuthService {
             var authentication = new UsernamePasswordAuthenticationToken(username,password);
             Authentication auth = authenticationManagerBuilder.getObject().authenticate(authentication);
             SecurityContextHolder.getContext().setAuthentication(auth);
+            // 인증 정보 확인
+            Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+            System.out.println("Authentication after setting: " + currentAuth);
         }
         catch(AuthenticationException e) {
         //todo error
@@ -119,9 +123,9 @@ public class AuthService {
     private Cookie createCookie(String jwt){
         Cookie cookie = new Cookie("jwt", jwt);
         cookie.setHttpOnly(true);   // XSS 공격 방지
-        //cookie.setSecure(true);     // HTTPS 환경에서만 쿠키 전달 -> 배포시 true 해야 됨.
+        cookie.setSecure(true);     // HTTPS 환경에서만 쿠키 전달 -> 배포시 true 해야 됨.
         cookie.setPath("/");        // 전체 경로에서 쿠키 사용 가능
-        cookie.setMaxAge(60 * 60 * 24); // 1일
+        cookie.setMaxAge(1000000); // 1일
         cookie.setAttribute("SameSite", "None");  // 크로스 사이트 요청 허용
         return cookie;
     }
