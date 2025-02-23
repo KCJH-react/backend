@@ -80,7 +80,7 @@ public class JWTUtil {
                 .claim("authorities", user.getAuthorities())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 // .issuedAt: 생성날짜를 생성하는 메소드.
-                .expiration(new Date(System.currentTimeMillis() + 3600000)) //유효기간 1시간
+                .expiration(new Date(System.currentTimeMillis() + 10)) //유효기간 1시간
                 // .expiration: 만료기간을 설정하는 메소드.
                 .signWith(key)
                 .compact();

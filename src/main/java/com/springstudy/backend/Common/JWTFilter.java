@@ -40,33 +40,17 @@ public class JWTFilter extends OncePerRequestFilter {
         Claims extract;
         try{
             extract = JWTUtil.extractToken(jwtToken);
-            Date expiration = extract.getExpiration();
-
-//            List<LinkedTreeMap<String, String>> rolesMap = extract.get("authorities", List.class);
-//
-//            List<String> roles = rolesMap.stream()
-//                    .map(map -> map.get("role")) // "authority" 키를 가진 값 추출
-//                    .collect(Collectors.toList());
-//            if (!roles.contains("일반유저")) {
-//                logger.error("권한 부족");
-//                throw new CustomException(ErrorCode.JWT_ACCESS_DENIED);
-//            }
-            //LinkedTreeMap와stream 공부.
         }
         catch(ExpiredJwtException e){
                 logger.error("JWT 토큰 만료됨");
                 String refreshToken = findJWT("refreshJwt",cookie);
                 //검증 2. refresh token 검증.
-                Claims extractRefresh = JWTUtil.extractToken(refreshToken);
-                Date expirationRefresh = extractRefresh.getExpiration();
-                if (expirationRefresh.before(new Date())) {
-                    // refresh토큰과 jwt 모두 만료가 지난 경우.
-                    throw new CustomException(ErrorCode.JWT_EXPIRATE_PASSED);
-                }
+                Claims extractRefresh = checkExpireRefreshToken(refreshToken);
+                //여기서 리프레시 토큰 만료일 검사.
                 String newJwt = JWTUtil.createTokenToRefresh(extractRefresh);
+                System.out.println("jwt 토큰 만료에 의한 jwt 토큰 재발급");
                 return newJwt;
                 // refresh 토큰 유효하고 jwt는 만료가 지난 경우.
-
         }
         catch(SignatureException e){
             logger.error(e.getMessage());
@@ -76,6 +60,18 @@ public class JWTFilter extends OncePerRequestFilter {
         // jwt 토큰이 유효한 경우.
     }
     // 서명 변조, 만료일 검사, 권한검사.
+    private Claims checkExpireRefreshToken(String refreshToken) {
+        try{
+            Claims extractRefresh = JWTUtil.extractToken(refreshToken);
+            return extractRefresh;
+        }
+        catch(ExpiredJwtException e){
+            // refresh토큰과 jwt 모두 만료가 지난 경우.
+            logger.error("refresh 토큰 만료됨.");
+            throw new CustomException(ErrorCode.JWT_EXPIRATE_PASSED);
+        }
+    }
+
     private void addContext(Claims extract){
         try{
             List<GrantedAuthority> authorities = Collections.singletonList(
@@ -111,7 +107,7 @@ public class JWTFilter extends OncePerRequestFilter {
         // 로그인과 회원가입에서는 필터링하지 않음.
 
         Cookie[] cookie = request.getCookies();
-        //todo 쿠키가 없을 가능성???
+        //todo 쿠키가 없을 가능성??? 없을 듯.
         String jwtToken = findJWT("jwt", cookie);
         // 검증 1. jwt 검사.
         String extract = checkToken(jwtToken, cookie);
