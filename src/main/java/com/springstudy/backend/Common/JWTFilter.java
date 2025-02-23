@@ -110,7 +110,7 @@ public class JWTFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        if(checkURL(request,"/login") || checkURL(request,"/createUser")) {
+        if(checkURL(request,"/login") || checkURL(request,"/createUser") || checkURL(request, "/swagger-ui")) {
             filterChain.doFilter(request, response);
             return;
         }
