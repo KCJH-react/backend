@@ -2,6 +2,7 @@ package com.springstudy.backend.Api.Gemini.Controller;
 
 import com.springstudy.backend.Api.Gemini.Service.GeminiService;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +24,8 @@ public class GeminiController {
         return geminiService.chatGemini(subject);
     }
     @PostMapping("/clearChallenge")
-    public ErrorCode clearChallenge(@RequestBody String challenge) {
+    public ErrorCode clearChallenge(@RequestBody String challenge, HttpServletRequest request) {
+        System.out.println(request.getCookies().toString());
         return geminiService.clearChallenge(challenge);
     }
 }

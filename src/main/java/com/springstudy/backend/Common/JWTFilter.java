@@ -32,9 +32,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final RedisService redisService;
-
     private static boolean checkURL(HttpServletRequest request, String url) {
         return request.getRequestURI().contains(url);
     }
