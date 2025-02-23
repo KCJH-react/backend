@@ -45,7 +45,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 Claims extractRefresh = checkRefreshToken(refreshToken);
                 //여기서 리프레시 토큰 만료일 검사.
                 String newJwt = JWTUtil.createTokenToRefresh(extractRefresh);
-                System.out.println("jwt 토큰 만료에 의한 jwt 토큰 재발급");
+                logger.error("jwt 토큰 만료에 의한 jwt 토큰 재발급");
                 return newJwt;
                 // refresh 토큰 유효하고 jwt는 만료가 지난 경우.
         }
@@ -63,13 +63,12 @@ public class JWTFilter extends OncePerRequestFilter {
 
             String username = extractRefresh.get("username",String.class);
             Date refreshIssuedAt = extractRefresh.getIssuedAt();
-            System.out.println("username: "+username+" refreshIssuedAt : " + refreshIssuedAt);
 
             String redisRefreshToken = redisService.getData("refresh_token: "+username);
 
             JWTUtil.extractToken(redisRefreshToken);
             Date redisRefreshIssuedAt = extractRefresh.getIssuedAt();
-            System.out.println("refresh redis: "+username+" redisRefreshIssuedAt : " + redisRefreshIssuedAt);
+
             if(redisRefreshToken == null || !redisRefreshIssuedAt.equals(refreshIssuedAt)){
                 throw new CustomException(ErrorCode.JWT_EXPIRATE_PASSED);
             }
@@ -111,7 +110,7 @@ public class JWTFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        if(checkURL(request,"/login") || checkURL(request,"/createUser")) {
+        if(checkURL(request,"/login") || checkURL(request,"/createUser") || checkURL(request, "/swagger-ui")) {
             filterChain.doFilter(request, response);
             return;
         }
