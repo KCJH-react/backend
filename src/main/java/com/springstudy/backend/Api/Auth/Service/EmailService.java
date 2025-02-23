@@ -2,6 +2,7 @@ package com.springstudy.backend.Api.Auth.Service;
 
 import com.springstudy.backend.Api.Auth.Model.Request.EmailRequest;
 import com.springstudy.backend.Api.Auth.Model.Request.EmailVerifyRequest;
+import com.springstudy.backend.Api.Repoitory.UserRepository;
 import com.springstudy.backend.Common.ErrorCode.CustomException;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
 import com.springstudy.backend.Common.RedisService;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class EmailService {
+    private final UserRepository userRepository;
 
     @Autowired
     private final JavaMailSender javaMailSender;
@@ -70,16 +72,15 @@ public class EmailService {
         String authNum = emailRequest.authnum();
         String email = emailRequest.email();
         String storedEmail = redisUtil.getData(authNum);
+        userRepository.findByEmail(email).ifPresent(user -> {
+            throw new CustomException(ErrorCode.USER_ALREADY_EXISTS);
+        });
 
-        if(storedEmail==null){
+        if(storedEmail==null || !storedEmail.equals(email)){
             //인증번호 틀림.
             //todo error
-            return ErrorCode.FAILURE;
-        }
-        else if(!storedEmail.equals(email)){
-            //인증번호에 해당하는 이메일이 아님.
-            //todo error
-            return ErrorCode.FAILURE;
+            //throw new CustomException(ErrorCode.ERROR_VERIFY);
+            return ErrorCode.VERIFY_FAILED;
         }
         return ErrorCode.SUCCESS;
     }
