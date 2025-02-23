@@ -3,28 +3,22 @@ package com.springstudy.backend.Api.Repoitory.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
+@Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
-@Getter
 @Table(name = "challenge")
-
 public class Challenge {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long challengeId;
+    private Long id;
 
-    @Column(nullable = false)
-    private String category;
+    private String challengeTitle;
 
-    @Column(nullable = false)
-    private String difficulty;
+    private String limitTime;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private int points;
+    private LocalDateTime current;
 }

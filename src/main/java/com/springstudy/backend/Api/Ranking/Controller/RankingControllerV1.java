@@ -1,9 +1,9 @@
-package com.springstudy.backend.Ranking.Controller;
+package com.springstudy.backend.Api.Ranking.Controller;
 
-import com.springstudy.backend.Ranking.Model.Request.SubmitScoreRequest;
-import com.springstudy.backend.Ranking.Model.Response.RankingResponse;
-import com.springstudy.backend.Ranking.Model.Response.SubmitScoreResponse;
-import com.springstudy.backend.Ranking.Service.RankingService;
+import com.springstudy.backend.Api.Ranking.Model.Request.SubmitScoreRequest;
+import com.springstudy.backend.Api.Ranking.Model.Response.RankingResponse;
+import com.springstudy.backend.Api.Ranking.Model.Response.SubmitScoreResponse;
+import com.springstudy.backend.Api.Ranking.Service.RankingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

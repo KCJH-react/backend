@@ -1,0 +1,63 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  depoly-step:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: aws credentials 설정.
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ap-northeast-4
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+
+      - name: ecr 로그인하기 # .docker/config.json
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+
+      - name: 레포 가져오기.
+        uses: actions/checkout@v4
+
+      - name: jdk 설치.
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: application.yml 작성
+        run: echo "${{secrets.APPLICATION_PROPERTIES}}" > ./src/main/resources/application.yml
+
+      - name: 테스트 및 jar 빌드.
+        run: |
+          ./gradlew clean build
+          ./gradlew test
+
+      - name: docker 이미지 생성
+        run:  |
+          docker build -t ${{steps.login-ecr.outputs.registry}}/spring-server:latest .
+          docker push ${{steps.login-ecr.outputs.registry}}/spring-server:latest
+
+      - name: ecr에 도커파일 작성하기
+        run: docker push ${{steps.login-ecr.outputs.registry}}/spring-server:latest
+
+      - name: ssh 접속
+        uses: actions/ssh-action@v1.0.3
+        with:
+          host:
+          username:
+          key:
+        script_stop: true
+        script: |
+          docker stop spring-server || true
+          docker rm spring-server || true
+          docker pull ${{steps.login-ecr.outputs.registry}}/spring-server:latest
+          docker run -d -p 8080:8080 --name spring-server ${{steps.login-ecr.outputs.registry}}/spring-server:latest
+          
+
+
+

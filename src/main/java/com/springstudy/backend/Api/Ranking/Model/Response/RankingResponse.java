@@ -1,4 +1,4 @@
-package com.springstudy.backend.Ranking.Model.Response;
+package com.springstudy.backend.Api.Ranking.Model.Response;
 
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -1,4 +1,5 @@
 package com.springstudy.backend.Api.Auth.Service;
+import com.springstudy.backend.Api.Auth.Model.AuthUser;
 import com.springstudy.backend.Api.Auth.Model.Request.CreateUserRequest;
 import com.springstudy.backend.Api.Auth.Model.Request.LoginRequest;
 import com.springstudy.backend.Api.Auth.Model.Response.CreateUserResponse;
@@ -6,11 +7,14 @@ import com.springstudy.backend.Api.Auth.Model.Response.LoginResponse;
 import com.springstudy.backend.Api.Repoitory.Entity.User;
 import com.springstudy.backend.Api.Repoitory.Entity.UserCredentional;
 import com.springstudy.backend.Api.Repoitory.UserRepository;
+import com.springstudy.backend.Common.ErrorCode.CustomException;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
 import com.springstudy.backend.Common.Hash.Hasher;
 import com.springstudy.backend.Common.JWTUtil;
+import com.springstudy.backend.Common.RedisService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +25,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Optional;
 
 @Service
@@ -29,12 +34,15 @@ import java.util.Optional;
 public class AuthService {
     private final UserRepository userRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final RedisService redisService;
 
     public CreateUserResponse createUser(CreateUserRequest request) {
         // 1. 동일 이메일 있나 확인.
         // 2. 비밀번호 암호화.
         // 3. User에 추가.
         // 4. 성공 코드 반환.
+        System.out.println("email: "+request.email()+" username: "+request.username()+"password: "+request.password()
+                );
 
         Optional<User> user = userRepository.findByEmail(request.email());
         if(user.isPresent()) {
@@ -47,7 +55,6 @@ public class AuthService {
             User newUser = User.builder()
                     .email(request.email())
                     .username(request.username())
-                    .userid(request.userid())
                     .build();
             UserCredentional userCredentional = UserCredentional.builder()
                     .user(newUser)
@@ -62,7 +69,7 @@ public class AuthService {
             }
         }
         catch(Exception e) {
-            log.error("USER_CREATE_FAILED: {}");
+            log.error("USER_CREATE_FAILED: "+e.getMessage());
             return new CreateUserResponse(ErrorCode.USER_CREATE_FAILED);
         }
 
@@ -76,46 +83,58 @@ public class AuthService {
         // 4. SecurityContextHolder에 로그인 정보 저장.
         // 5. SecurityContextHolder에서 정보 가져와서 jwt 발급.
 
-        Optional<User> user = userRepository.findByUserid(request.userid());
+        Optional<User> user = userRepository.findByEmail(request.email());
+        System.out.println("email: "+request.email()+"user: "+user.isPresent());
         if(user.isEmpty()) {
             //todo error
+            throw new CustomException(ErrorCode.NOT_EXIST_USER);
         }
-
-        try{
             authUser(user.get().getUsername(),request.password());
-        }
-        catch(AuthenticationException e) {
-            //todo error
-        }
 
         try{
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if(auth == null){
                 //todo error
+                throw new CustomException(ErrorCode.AUTH_SAVE_ERROR);
             }
             String jwt = JWTUtil.createToken(auth);
-            Cookie cookie= createCookie(jwt);
+            String refreshJwt = JWTUtil.createRefreshToken(auth);
+            redisService.setDataExpire("refresh_token: "+((AuthUser)auth.getPrincipal()).getUsername(), refreshJwt, 3600000);
+            Cookie cookie= createCookie("jwt",jwt);
+            Cookie refreshCookie= createCookie("refreshJwt",refreshJwt);
             response.addCookie(cookie);
+            response.addCookie(refreshCookie);
         }
         catch(JwtException e) {
             //todo error
+            log.error(e.getMessage());
+            throw new CustomException(ErrorCode.JWT_CREATE_ERROR);
         }
 
         return new LoginResponse(ErrorCode.SUCCESS);
     }
-    private void authUser(String username, String password) throws AuthenticationException {
-        var authentication = new UsernamePasswordAuthenticationToken(username,password);
-        Authentication auth = authenticationManagerBuilder.getObject().authenticate(authentication);
-        SecurityContextHolder.getContext().setAuthentication(auth);
+    private void authUser(String username, String password){
+        try{
+            var authentication = new UsernamePasswordAuthenticationToken(username,password);
+            Authentication auth = authenticationManagerBuilder.getObject().authenticate(authentication);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            // 인증 정보 확인
+            Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+            System.out.println("Authentication after setting: " + currentAuth);
+        }
+        catch(AuthenticationException e) {
+        //todo error
+        log.error(e.getMessage());
+        throw new CustomException(ErrorCode.MISMATCH_PASSWORD);
     }
-    private Cookie createCookie(String jwt){
-        Cookie cookie = new Cookie("jwt", jwt);
-        cookie.setMaxAge(10);
-        // 만료기간 10초로 설정한다.
-        cookie.setHttpOnly(true);
-        // xss 공격을 방지한다.
-        cookie.setPath("/");
-        // 모든 경로에서 쿠키를 전달한다.
+    }
+    private Cookie createCookie(String name, String jwt){
+        Cookie cookie = new Cookie(name, jwt);
+        cookie.setHttpOnly(true);   // XSS 공격 방지
+        cookie.setSecure(true);     // HTTPS 환경에서만 쿠키 전달 -> 배포시 true 해야 됨.
+        cookie.setPath("/");        // 전체 경로에서 쿠키 사용 가능
+        cookie.setMaxAge(1000000); // 1일
+        cookie.setAttribute("SameSite", "None");  // 크로스 사이트 요청 허용
         return cookie;
     }
 }

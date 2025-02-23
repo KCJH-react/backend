@@ -2,6 +2,7 @@ package com.springstudy.backend.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -22,7 +23,8 @@ public class SecurityConfig {
                 // csrf 기능을 비활성화한다.
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers("/**").permitAll()
+                        authorize.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers("/**").permitAll()
                 );
         http.sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

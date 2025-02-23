@@ -8,8 +8,8 @@ import jakarta.validation.constraints.NotNull;
 public record LoginRequest (
         @NotNull
         @NotBlank
-        @Schema(description = "로그인 아이디")
-        String userid,
+        @Schema(description = "로그인 이메일")
+        String email,
 
         @NotNull
         @NotBlank

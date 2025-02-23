@@ -1,4 +1,4 @@
-package com.springstudy.backend.Ranking.Model.Request;
+package com.springstudy.backend.Api.Ranking.Model.Request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
