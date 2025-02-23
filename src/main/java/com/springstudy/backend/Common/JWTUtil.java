@@ -18,8 +18,10 @@ import java.util.stream.Collectors;
 
 @Component
 // JWT 만들어주는 함수
+@RequiredArgsConstructor
 public class JWTUtil {
-    static final SecretKey key =
+    private final RedisService redisService;
+    private static final SecretKey key =
             Keys.hmacShaKeyFor(Decoders.BASE64.decode(
                     "jwtpassword123jwtpassword123jwtpassword123jwtpassword123jwtpassword"
             ));
@@ -80,7 +82,7 @@ public class JWTUtil {
                 .claim("authorities", user.getAuthorities())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 // .issuedAt: 생성날짜를 생성하는 메소드.
-                .expiration(new Date(System.currentTimeMillis() + 10)) //유효기간 1시간
+                .expiration(new Date(System.currentTimeMillis() + 1000000)) //유효기간 1시간
                 // .expiration: 만료기간을 설정하는 메소드.
                 .signWith(key)
                 .compact();

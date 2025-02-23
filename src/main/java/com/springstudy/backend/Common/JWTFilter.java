@@ -1,6 +1,5 @@
 package com.springstudy.backend.Common;
 
-import com.google.gson.internal.LinkedTreeMap;
 import com.springstudy.backend.Common.ErrorCode.CustomException;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
 import io.jsonwebtoken.Claims;
@@ -13,7 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,13 +22,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
+    private final RedisService redisService;
 
     private static boolean checkURL(HttpServletRequest request, String url) {
         return request.getRequestURI().contains(url);
@@ -45,7 +42,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 logger.error("JWT 토큰 만료됨");
                 String refreshToken = findJWT("refreshJwt",cookie);
                 //검증 2. refresh token 검증.
-                Claims extractRefresh = checkExpireRefreshToken(refreshToken);
+                Claims extractRefresh = checkRefreshToken(refreshToken);
                 //여기서 리프레시 토큰 만료일 검사.
                 String newJwt = JWTUtil.createTokenToRefresh(extractRefresh);
                 System.out.println("jwt 토큰 만료에 의한 jwt 토큰 재발급");
@@ -60,9 +57,23 @@ public class JWTFilter extends OncePerRequestFilter {
         // jwt 토큰이 유효한 경우.
     }
     // 서명 변조, 만료일 검사, 권한검사.
-    private Claims checkExpireRefreshToken(String refreshToken) {
+    private Claims checkRefreshToken(String refreshToken) {
         try{
             Claims extractRefresh = JWTUtil.extractToken(refreshToken);
+
+            String username = extractRefresh.get("username",String.class);
+            Date refreshIssuedAt = extractRefresh.getIssuedAt();
+            System.out.println("username: "+username+" refreshIssuedAt : " + refreshIssuedAt);
+
+            String redisRefreshToken = redisService.getData("refresh_token: "+username);
+
+            JWTUtil.extractToken(redisRefreshToken);
+            Date redisRefreshIssuedAt = extractRefresh.getIssuedAt();
+            System.out.println("refresh redis: "+username+" redisRefreshIssuedAt : " + redisRefreshIssuedAt);
+            if(redisRefreshToken == null || !redisRefreshIssuedAt.equals(refreshIssuedAt)){
+                throw new CustomException(ErrorCode.JWT_EXPIRATE_PASSED);
+            }
+
             return extractRefresh;
         }
         catch(ExpiredJwtException e){
