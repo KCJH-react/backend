@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class EmailControllerV1 {
     public final EmailService emailService;
     @PostMapping("/send")
-    public ErrorCode sendEmail(@RequestParam @Valid EmailRequest emailRequest) {
+    public ErrorCode sendEmail(@RequestBody @Valid EmailRequest emailRequest) {
         return emailService.sendMail(emailRequest);
     }
     @PostMapping("/check")

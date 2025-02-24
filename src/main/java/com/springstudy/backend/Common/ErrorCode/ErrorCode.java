@@ -31,7 +31,9 @@ public enum ErrorCode implements CodeInterface{
     AUTH_SAVE_ERROR(-12, "AUTH_SAVE_ERROR"),
     SIGNATURE_EXCEPTION(-13, "SIGNATURE_EXCEPTION"),
     JWT_EXPIRATE_PASSED(-14, "JWT_EXPIRATE_PASSED"),
-    JWT_ACCESS_DENIED(-15, "JWT_ACCESS_DENIED");
+    JWT_ACCESS_DENIED(-15, "JWT_ACCESS_DENIED"),
+
+    VERIFY_FAILED(-16, "VERIFY_FAILED");
 
     private final Integer code;
     private final String message;
