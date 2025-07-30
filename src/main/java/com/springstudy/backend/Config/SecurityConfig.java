@@ -22,6 +22,7 @@ public class SecurityConfig {
         http
                 // csrf 기능을 비활성화한다.
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable()) // Spring Security의 CORS 비활성화 (WebMvcConfigurer 설정을 따름)
                 .authorizeHttpRequests((authorize) ->
                         authorize.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers("/**").permitAll()
