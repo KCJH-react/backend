@@ -1,9 +1,9 @@
 package com.springstudy.backend.Api.Challenge.Service;
 
-import com.springstudy.backend.Api.Repoitory.ChallengeRepository;
-import com.springstudy.backend.Api.Repoitory.Entity.Challenge;
-import com.springstudy.backend.Api.Repoitory.PrivateChallengeRepository;
-import com.springstudy.backend.Api.Repoitory.UserRepository;
+import com.springstudy.backend.Api.Repository.ChallengeRepository;
+import com.springstudy.backend.Api.Repository.Entity.Challenge;
+import com.springstudy.backend.Api.Repository.PrivateChallengeRepository;
+import com.springstudy.backend.Api.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +11,14 @@ import org.springframework.stereotype.Service;
 public class ChallengeService {
 
     @Autowired
+    private ChallengeRepository challengeRepository;
+
+    @Autowired
     private PrivateChallengeRepository privateChallengeRepository;
 
     @Autowired
     private UserRepository userRepository;
+
 
     // 챌린지 완료 처리
     public boolean completeChallenge(Long userid, Long challengeId) {
@@ -26,7 +30,7 @@ public class ChallengeService {
             }
 
             // 챌린지 정보 조회
-            Challenge challenge = ChallengeRepository.findById(challengeId).orElse(null);
+            Challenge challenge = challengeRepository.findById(challengeId).orElse(null);
             if (challenge == null) {
                 return false;
             }

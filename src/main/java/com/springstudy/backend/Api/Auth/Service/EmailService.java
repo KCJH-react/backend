@@ -2,7 +2,7 @@ package com.springstudy.backend.Api.Auth.Service;
 
 import com.springstudy.backend.Api.Auth.Model.Request.EmailRequest;
 import com.springstudy.backend.Api.Auth.Model.Request.EmailVerifyRequest;
-import com.springstudy.backend.Api.Repoitory.UserRepository;
+import com.springstudy.backend.Api.Repository.UserRepository;
 import com.springstudy.backend.Common.ErrorCode.CustomException;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
 import com.springstudy.backend.Common.RedisService;

@@ -3,8 +3,8 @@ package com.springstudy.backend.Api.Ranking.Service;
 import com.springstudy.backend.Api.Ranking.Model.Request.SubmitScoreRequest;
 import com.springstudy.backend.Api.Ranking.Model.Response.RankingResponse;
 import com.springstudy.backend.Api.Ranking.Model.Response.SubmitScoreResponse;
-import com.springstudy.backend.Api.Repoitory.Entity.Ranking;
-import com.springstudy.backend.Api.Repoitory.RankingRepository;
+import com.springstudy.backend.Api.Repository.Entity.Ranking;
+import com.springstudy.backend.Api.Repository.RankingRepository;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
 import com.springstudy.backend.Api.Auth.Model.AuthUser;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class RankingService {
 
             // ✅ 기존 데이터가 있으면 업데이트, 없으면 생성
             Ranking ranking = rankingRepository.findByUserid(userid)
-                    .orElse(new Ranking(userid, 0));
+                    .orElse(new Ranking(userid, "기본", 0));
 
             ranking.setScore(ranking.getScore() + request.score()); // ✅ 점수 누적
             rankingRepository.save(ranking);

@@ -1,6 +1,6 @@
-package com.springstudy.backend.Api.Repoitory;
+package com.springstudy.backend.Api.Repository;
 
-import com.springstudy.backend.Api.Repoitory.Entity.User;
+import com.springstudy.backend.Api.Repository.Entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

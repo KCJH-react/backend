@@ -41,3 +41,6 @@ token: # ??? ????
   refresh-token-time: 500
 gemini:
   url: ${GEMINI}
+openai:
+  model: ${MODEL}
+  secret-key: ${GPT}

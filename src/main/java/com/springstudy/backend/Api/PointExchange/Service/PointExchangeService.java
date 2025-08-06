@@ -2,8 +2,8 @@ package com.springstudy.backend.Api.PointExchange.Service;
 
 import com.springstudy.backend.Api.PointExchange.Model.Request.PointExchangeRequest;
 import com.springstudy.backend.Api.PointExchange.Model.Response.PointExchangeResponse;
-import com.springstudy.backend.Api.Repoitory.Entity.PointExchange;
-import com.springstudy.backend.Api.Repoitory.PointExchangeRepository;
+import com.springstudy.backend.Api.Repository.Entity.PointExchange;
+import com.springstudy.backend.Api.Repository.PointExchangeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

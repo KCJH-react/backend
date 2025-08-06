@@ -4,9 +4,9 @@ import com.springstudy.backend.Api.Auth.Model.Request.CreateUserRequest;
 import com.springstudy.backend.Api.Auth.Model.Request.LoginRequest;
 import com.springstudy.backend.Api.Auth.Model.Response.CreateUserResponse;
 import com.springstudy.backend.Api.Auth.Model.Response.LoginResponse;
-import com.springstudy.backend.Api.Repoitory.Entity.User;
-import com.springstudy.backend.Api.Repoitory.Entity.UserCredentional;
-import com.springstudy.backend.Api.Repoitory.UserRepository;
+import com.springstudy.backend.Api.Repository.Entity.User;
+import com.springstudy.backend.Api.Repository.Entity.UserCredentional;
+import com.springstudy.backend.Api.Repository.UserRepository;
 import com.springstudy.backend.Common.ErrorCode.CustomException;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
 import com.springstudy.backend.Common.Hash.Hasher;
@@ -14,7 +14,6 @@ import com.springstudy.backend.Common.JWTUtil;
 import com.springstudy.backend.Common.RedisService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +24,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
 import java.util.Optional;
 
 @Service

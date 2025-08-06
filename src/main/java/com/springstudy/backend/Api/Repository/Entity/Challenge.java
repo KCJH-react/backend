@@ -1,4 +1,4 @@
-package com.springstudy.backend.Api.Repoitory.Entity;
+package com.springstudy.backend.Api.Repository.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table(name = "challenge")
+@Table(name = "randomChallenge")
 public class Challenge {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
