@@ -1,4 +1,4 @@
-package com.springstudy.backend.Api.Repoitory.Entity;
+package com.springstudy.backend.Api.Repository.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,13 +8,12 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Getter
-//@Table(name = "userCredentional")
-public class UserCredentional {
+@Table(name = "user_credentials")
+public class UserCredential {
 
     @Id
-    @OneToOne
-    @JoinColumn(name = "userid")
-    private User user;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false)
     private String password;

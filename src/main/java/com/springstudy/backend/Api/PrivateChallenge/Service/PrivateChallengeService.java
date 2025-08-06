@@ -1,14 +1,13 @@
 package com.springstudy.backend.Api.PrivateChallenge.Service;
 
 
-import com.springstudy.backend.Api.Repoitory.Entity.PrivateChallenge;
+import com.springstudy.backend.Api.Repository.Entity.PrivateChallenge;
 import com.springstudy.backend.Api.PrivateChallenge.Model.Request.PrivateChallengeRequest;
 import com.springstudy.backend.Api.PrivateChallenge.Model.Response.PrivateChallengeResponse;
-import com.springstudy.backend.Api.Repoitory.PrivateChallengeRepository;
+import com.springstudy.backend.Api.Repository.PrivateChallengeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

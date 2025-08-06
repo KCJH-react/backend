@@ -1,4 +1,4 @@
-package com.springstudy.backend.Api.Repoitory.Entity;
+package com.springstudy.backend.Api.Repository.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;

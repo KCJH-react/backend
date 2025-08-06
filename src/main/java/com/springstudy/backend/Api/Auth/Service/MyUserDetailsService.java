@@ -1,17 +1,14 @@
 package com.springstudy.backend.Api.Auth.Service;
 
 import com.springstudy.backend.Api.Auth.Model.AuthUser;
-import com.springstudy.backend.Api.Repoitory.Entity.User;
-import com.springstudy.backend.Api.Repoitory.UserRepository;
+import com.springstudy.backend.Api.Repository.Entity.User;
+import com.springstudy.backend.Api.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +29,7 @@ public class MyUserDetailsService implements UserDetailsService {
         List<GrantedAuthority> authorityList = new ArrayList<>();
         authorityList.add(new SimpleGrantedAuthority("일반유저"));
         // User 객체는 권한 정보가 있어야 된다.
-        return new AuthUser(member.getUsername(), member.getUser_credentional().getPassword(),
+        return new AuthUser(member.getUsername(), member.getUser_credential().getPassword(),
                 authorityList, member.getEmail());
         // Authentication 객체와 비교할 대상.
     }
