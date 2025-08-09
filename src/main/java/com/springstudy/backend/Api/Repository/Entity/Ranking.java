@@ -15,10 +15,22 @@ public class Ranking {
     private Long id;
 
     private String userid;
+
+    private String rankType;
+
+    private Long rankPosition;
+
+    private Long point;
+
+    private Long successCount;
+
+    private Long updatedAt;
+
     private int score;
 
-    public Ranking(String userid, int score) {
+    public Ranking(String userid, String rankType, int score) {
         this.userid = userid;
+        this.rankType = rankType;
         this.score = score;
     }
 }
