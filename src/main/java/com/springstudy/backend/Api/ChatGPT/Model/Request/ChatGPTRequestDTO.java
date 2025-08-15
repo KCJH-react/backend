@@ -1,6 +1,6 @@
 package com.springstudy.backend.Api.ChatGPT.Model.Request;
 
-import com.springstudy.backend.Api.Gemini.Model.ChatMessage;
+import com.springstudy.backend.Api.ChatGPT.Model.ChatMessage;
 import lombok.Getter;
 import lombok.Setter;
 

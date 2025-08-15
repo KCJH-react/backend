@@ -2,8 +2,7 @@ package com.springstudy.backend.Api.ChatGPT.Service;
 
 import com.springstudy.backend.Api.ChatGPT.Model.Request.ChatGPTRequestDTO;
 import com.springstudy.backend.Api.ChatGPT.Model.Response.ChatGPTResponseDTO;
-import com.springstudy.backend.Api.Gemini.Model.ChatMessage;
-import org.springframework.beans.factory.annotation.Value;
+import com.springstudy.backend.Api.ChatGPT.Model.ChatMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -17,6 +16,7 @@ public class ChatGPTService {
     private final String OPENAI_API_KEY;
     private final String OPENAI_MODEL;
 
+
     public ChatGPTService() {
         Dotenv dotenv = Dotenv.load();
         this.OPENAI_API_KEY = dotenv.get("GPT");
@@ -29,9 +29,14 @@ public class ChatGPTService {
                 .build();
     }
 
-    public Mono<String> getCompletion(String prompt) {
-        ChatMessage userMessage = new ChatMessage("user", prompt);
-        ChatGPTRequestDTO request = new ChatGPTRequestDTO(OPENAI_MODEL, List.of(userMessage));
+    public Mono<String> makeChallengeGPT(String systemPrompt, String userPrompt) {
+        ChatMessage systemMessage = new ChatMessage("system", systemPrompt);
+        ChatMessage userMessage = new ChatMessage("user", userPrompt);
+
+        ChatGPTRequestDTO request = new ChatGPTRequestDTO(
+                OPENAI_MODEL,
+                List.of(systemMessage, userMessage)
+        );
 
         return webClient.post()
                 .bodyValue(request)
