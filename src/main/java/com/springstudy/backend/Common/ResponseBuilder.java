@@ -24,8 +24,11 @@ public class ResponseBuilder<T> {
         return this;
     }
     public ResponseBuilder<T> errorResponsev2(Error code, String message){
-        log.error(message);
-        if(code != null) this.errorResponsev2 = new ErrorResponsev2(code, message);
+        if(code == null) log.info(message);
+        else {
+            log.error(message);
+            this.errorResponsev2 = new ErrorResponsev2(code, message);
+        }
         return this;
     }
     public ResponseBuilder<T> status(HttpStatus status){

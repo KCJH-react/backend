@@ -1,6 +1,7 @@
 package com.springstudy.backend.Api.Auth.Service;
 import com.springstudy.backend.Api.Auth.Model.Request.CreateUserRequest;
 import com.springstudy.backend.Api.Auth.Model.Request.LoginRequest;
+import com.springstudy.backend.Api.Auth.Model.Request.UpdateRequest;
 import com.springstudy.backend.Api.Repository.Entity.PreferredChallenge;
 import com.springstudy.backend.Api.Repository.Entity.User;
 import com.springstudy.backend.Api.Repository.Entity.UserCredential;
@@ -15,6 +16,8 @@ import com.springstudy.backend.Common.JWTToken;
 import com.springstudy.backend.Common.JWTUtil;
 import com.springstudy.backend.Common.ResponseBuilder;
 import com.springstudy.backend.Common.Type.Challenge;
+import com.springstudy.backend.Common.Type.Sex;
+import com.springstudy.backend.Common.Type.UserInfoType;
 import com.springstudy.backend.Error;
 import com.springstudy.backend.ErrorResponsev2;
 import com.springstudy.backend.Response;
@@ -63,6 +66,7 @@ public class AuthService {
                 .build();
 
         User newUser = User.builder()
+                .points(0)
                 .sex(request.sex())
                 .birthday(request.birthday())
                 .goal(request.goal())
@@ -157,5 +161,82 @@ public class AuthService {
         log.error(e.getMessage());
         throw new CustomException(ErrorCode.MISMATCH_PASSWORD);
     }
+    }
+
+    public ResponseEntity<Response<User>> update(UpdateRequest updateRequest, Long id) {
+        // 1. 비번 검사.
+        // 2. 변경할 정보 유형 확인.
+        // 3. 각 유형별 타입 검사.
+        // 4. 데베에 실제 반영.
+
+        Optional<User> userOptional = userRepository.findById(id);
+        if(userOptional.isEmpty()) {
+            //예외처리
+            return ResponseBuilder.<User>create()
+                    .data(null)
+                    .errorResponsev2(Error.NOT_FOUND,"회원이 존재하지 않습니다.")
+                    .status(HttpStatus.OK)
+                    .build();
+        }
+
+        String user_password = userOptional.get().getUser_credential().getPassword();
+        String password = updateRequest.password();
+        if(!Hasher.matches(password,user_password)){
+            //예외처리
+            return ResponseBuilder.<User>create()
+                    .data(null)
+                    .errorResponsev2(Error.UNAUTHORIZED,"비밀번호가 일치하지 않습니다.")
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .build();
+        }
+
+        UserInfoType type = updateRequest.type();
+        String content = updateRequest.content();
+        if(!typeValid(type, content)){
+            //예외처리
+            return ResponseBuilder.<User>create()
+                    .data(null)
+                    .errorResponsev2(Error.BAD_REQUEST,"변경할 type의 content 형식이 일치하지 않습니다.")
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
+        User UpdatedUser = updateUserInfo(userOptional.get(), type, content);
+        UpdatedUser.setUserCredential(null);
+
+        return ResponseBuilder.<User>create()
+                .data(UpdatedUser)
+                .errorResponsev2(null,"유저 정보 수정 성공")
+                .status(HttpStatus.OK)
+                .build();
+    }
+    private boolean typeValid(UserInfoType type, String content) {
+        if(content == null || content.length() == 0) return false;
+        switch(type){
+            case USERNAME: return true;
+            case PASSWORD: // 비밀번호: 최소 10자 이상, 대문자/소문자/숫자/특수문자 포함
+                return content.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{10,}$");
+            case EMAIL: // email repo에 이미 있는지
+                return !userRepository.findByEmail(content).isPresent();
+            case SEX: // 남자 | 여자 인지
+                return "남자".equals(content) || "여자".equals(content);
+            case BIRTHDAY: // 형식 yyyy-MM-dd 인지
+                try{
+                    java.time.LocalDate.parse(content, java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    return true;
+                }catch(Exception e){return false;}
+            case GOAL: return true;
+        }
+        return false;
+    }
+    private User updateUserInfo(User user, UserInfoType type, String content) {
+        switch(type){
+            case USERNAME: user.setUsername(content); break;
+            case PASSWORD: user.getUser_credential().setPassword(Hasher.hash(content)); break;
+            case EMAIL: user.setEmail(content); break;
+            case SEX: user.setSex(Sex.valueOf(content)); break;
+            case BIRTHDAY: user.setBirthday(content); break;
+            case GOAL: user.setGoal(content); break;
+        }
+        return userRepository.save(user);
     }
 }
