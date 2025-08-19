@@ -2,7 +2,6 @@ package com.springstudy.backend.Api.Auth.Controller;
 
 import com.springstudy.backend.Api.Auth.Model.Request.CreateUserRequest;
 import com.springstudy.backend.Api.Auth.Model.Request.LoginRequest;
-import com.springstudy.backend.Api.Auth.Model.Request.UpdateRequest;
 import com.springstudy.backend.Api.Auth.Model.Response.LoginResponse;
 import com.springstudy.backend.Api.Auth.Service.AuthService;
 import com.springstudy.backend.Api.Repository.Entity.User;
@@ -11,7 +10,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/v1/user")
@@ -29,9 +31,4 @@ public class AuthControllerV1 {
         System.out.println(httpServletRequest.getCookies());
         return authService.signin(loginRequest);
     }
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Response<User>>  update(UpdateRequest updateRequest, @PathVariable Long id) {
-        return authService.update(updateRequest, id);
-    }
-
 }

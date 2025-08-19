@@ -13,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Getter
-@Setter
 @Table(name = "users")
 public class User {
     @Id
@@ -26,16 +25,13 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    //private String profileImg; s3로 추후 구현
-    
+    //private String profileImg;
     private Sex sex;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern ="yyyy-MM-dd")
     private String birthday;
 
     private String goal;
-
-    private int points;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_credential_id", referencedColumnName = "id", nullable = false, unique = true,
