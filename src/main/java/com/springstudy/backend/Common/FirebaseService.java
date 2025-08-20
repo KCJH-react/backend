@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -27,6 +29,7 @@ public class FirebaseService {
 
         return url.toString();
     }
+
     public void uploadFile(String fileName, byte[] content, String contentType) {
         Bucket bucket = StorageClient.getInstance().bucket(bucketName);
         bucket.create(fileName, content, contentType);
