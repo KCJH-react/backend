@@ -4,12 +4,18 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.FileInputStream;
 
+@Slf4j
 @Configuration
 public class FirebaseConfig {
+
+    @Value("${firebase.bucketName}")
+    private String bucketName;
 
     @PostConstruct
     public void init() {
@@ -18,11 +24,11 @@ public class FirebaseConfig {
             FirebaseOptions.Builder optionBuilder = FirebaseOptions.builder();
             FirebaseOptions options = optionBuilder
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .setStorageBucket("imgstorage-6ba5c.firebasestorage.app")
+                    .setStorageBucket(bucketName)
                     .build();
             FirebaseApp.initializeApp(options);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
     }
 }
