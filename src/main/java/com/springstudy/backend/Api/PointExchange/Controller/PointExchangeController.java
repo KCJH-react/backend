@@ -3,6 +3,7 @@ package com.springstudy.backend.Api.PointExchange.Controller;
 import com.springstudy.backend.Api.PointExchange.Model.Request.PointExchangeRequest;
 import com.springstudy.backend.Api.PointExchange.Model.Response.PointExchangeResponse;
 import com.springstudy.backend.Api.PointExchange.Service.PointExchangeService;
+import com.springstudy.backend.Common.FirebaseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,5 +33,16 @@ public class PointExchangeController {
     @GetMapping("/{username}/history")
     public ResponseEntity<List<PointExchangeResponse>> getUserPointHistory(@PathVariable String username) {
         return ResponseEntity.ok(pointExchangeService.getUserPointHistory(username));
+    }
+
+    private final FirebaseService firebaseService;
+
+    @GetMapping("/firebase")
+    public ResponseEntity<String> getFileUrl(String fileName) {
+        String url = firebaseService.getFileUrl(fileName);
+
+        if (url == null) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(url);
     }
 }

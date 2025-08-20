@@ -26,9 +26,9 @@ public class AuthControllerV1 {
         return authService.signup(createUserRequest);
     }
     @PostMapping("/signin")
-    public ResponseEntity<Response<User>> signin(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse
-    , HttpServletRequest httpServletRequest) {
+    public ResponseEntity<Response<User>> signin(@RequestBody LoginRequest loginRequest,
+                                                 HttpServletRequest httpServletRequest) {
         System.out.println(httpServletRequest.getCookies());
-        return authService.signin(httpServletResponse, loginRequest);
+        return authService.signin(loginRequest);
     }
 }

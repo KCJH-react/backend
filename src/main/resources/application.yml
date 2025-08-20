@@ -42,3 +42,6 @@ token: # ??? ????
   refresh-token-time: 500
 #gemini:
 #  url: ${GEMINI}
+
+firebase:
+  bucketName: imgstorage-6ba5c.firebasestorage.app

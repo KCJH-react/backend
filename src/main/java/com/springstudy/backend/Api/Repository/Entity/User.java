@@ -1,7 +1,12 @@
 package com.springstudy.backend.Api.Repository.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.springstudy.backend.Common.Type.Challenge;
+import com.springstudy.backend.Common.Type.Sex;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,8 +25,16 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    //private String profileImg;
+    private Sex sex;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern ="yyyy-MM-dd")
+    private String birthday;
+
+    private String goal;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_credentional_id", referencedColumnName = "id", nullable = false, unique = true,
+    @JoinColumn(name = "user_credential_id", referencedColumnName = "id", nullable = false, unique = true,
     foreignKey = @ForeignKey(name = "fk_users_user_credentials"))
     private UserCredential user_credential;
 

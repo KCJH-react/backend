@@ -61,6 +61,7 @@ dependencies {
     //implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter:1.0.0-SNAPSHOT'
     implementation 'org.springframework.boot:spring-boot-starter-freemarker'
 
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
 }
 
 tasks.named('test') {
