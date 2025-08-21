@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Getter
+@Setter
 @Table(name = "users")
 public class User {
     @Id
@@ -25,7 +26,6 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    //private String profileImg;
     private Sex sex;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern ="yyyy-MM-dd")
@@ -34,6 +34,8 @@ public class User {
     private String goal;
 
     private String profileImg;
+
+    private int points;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_credential_id", referencedColumnName = "id", nullable = false, unique = true

@@ -25,7 +25,10 @@ public class ResponseBuilder<T> {
     }
     public ResponseBuilder<T> errorResponsev2(Error code, String message){
         if(code == null) log.info(message);
-        else { log.error(message); this.errorResponsev2 = new ErrorResponsev2(code, message);}
+        else {
+            log.error(message);
+            this.errorResponsev2 = new ErrorResponsev2(code, message);
+        }
         return this;
     }
     public ResponseBuilder<T> status(HttpStatus status){

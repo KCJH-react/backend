@@ -2,6 +2,7 @@ package com.springstudy.backend.Api.Auth.Controller;
 
 import com.springstudy.backend.Api.Auth.Model.Request.CreateUserRequest;
 import com.springstudy.backend.Api.Auth.Model.Request.LoginRequest;
+import com.springstudy.backend.Api.Auth.Model.Request.UpdateRequest;
 import com.springstudy.backend.Api.Auth.Service.AuthService;
 import com.springstudy.backend.Api.Repository.Entity.User;
 import com.springstudy.backend.Response;
@@ -31,5 +32,9 @@ public class AuthControllerV1 {
     @PostMapping(value = "/profileUpload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Response<String>> profileUpload(@RequestPart MultipartFile profileImg){
         return authService.uploadProfile(profileImg);
+    }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Response<User>>  update(UpdateRequest updateRequest, @PathVariable Long id) {
+        return authService.update(updateRequest, id);
     }
 }
