@@ -9,11 +9,10 @@ import com.springstudy.backend.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("api/v1/user")
@@ -21,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthControllerV1 {
     private final AuthService authService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<Response<User>> signup(@RequestBody CreateUserRequest createUserRequest) {
+    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Response<User>> signup(@RequestPart CreateUserRequest createUserRequest) {
         return authService.signup(createUserRequest);
     }
     @PostMapping("/signin")
@@ -30,5 +29,9 @@ public class AuthControllerV1 {
                                                  HttpServletRequest httpServletRequest) {
         System.out.println(httpServletRequest.getCookies());
         return authService.signin(loginRequest);
+    }
+    @PostMapping(value = "/profileUpload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Response<String>> profileUpload(@RequestParam MultipartFile profileImg){
+        return authService.uploadProfile(profileImg);
     }
 }

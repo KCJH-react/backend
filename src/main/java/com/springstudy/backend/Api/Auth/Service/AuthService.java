@@ -10,6 +10,7 @@ import com.springstudy.backend.Api.Repository.UserRepository;
 import com.springstudy.backend.Api.Repository.User_preferredChallengeRepository;
 import com.springstudy.backend.Common.ErrorCode.CustomException;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
+import com.springstudy.backend.Common.FirebaseService;
 import com.springstudy.backend.Common.Hash.Hasher;
 import com.springstudy.backend.Common.JWTToken;
 import com.springstudy.backend.Common.JWTUtil;
@@ -31,7 +32,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -42,6 +45,7 @@ public class AuthService {
     private final PreferredChallengeRepository preferredChallengeRepository;
     private final User_preferredChallengeRepository user_preferredChallengeRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final FirebaseService firebaseService;
 
     public ResponseEntity<Response<User>> signup(CreateUserRequest request) {
         // 1. 동일 이메일 있나 확인.
@@ -49,7 +53,7 @@ public class AuthService {
         // 3. User에 추가.
         // 4. user 정보 반환.
 
-        if(userRepository.findByEmail(request.email()).isPresent()) {
+        if (userRepository.findByEmail(request.email()).isPresent()) {
             return ResponseBuilder.<User>create()
                     .status(HttpStatus.CONFLICT)
                     .data(null)
@@ -68,13 +72,13 @@ public class AuthService {
                 .goal(request.goal())
                 .email(request.email())
                 .username(request.username())
+                .profileImg(request.imgUrl())
                 .user_credential(userCredential)
                 .build();
 
         try{
             User savedUser = userRepository.save(newUser);
 
-            Long userId = savedUser.getId();
             for(Challenge c : request.preferredChallenge()){
                 PreferredChallenge pc = PreferredChallenge.builder().challenge(c).build();
                 preferredChallengeRepository.save(pc);
@@ -109,16 +113,16 @@ public class AuthService {
         Optional<User> user = userRepository.findByEmail(request.email());
         System.out.println("email: "+request.email()+"user: "+user.isPresent());
         if(user.isEmpty()) {
-            ErrorResponsev2 errorResponsev2 = new ErrorResponsev2(Error.UNAUTHORIZED, "존재하지 않는 사용자");
-            signin_response.setErrorResponsev2(errorResponsev2);
-            log.error(errorResponsev2.toString());
-            return new ResponseEntity(signin_response, HttpStatus.UNAUTHORIZED);
+            return ResponseBuilder.<User>create()
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .data(null)
+                    .errorResponsev2(Error.UNAUTHORIZED, "존재하지 않는 사용자")
+                    .build();
         }
         try{
             Authentication auth = authUser(user.get().getUsername(),request.password());
-            JWTToken jwtToken = JWTUtil.generateToken(auth);
-
             User authedUser = userRepository.findByUsername(auth.getName()).get();
+            JWTToken jwtToken = JWTUtil.generateToken(auth);
             log.info("login 성공 {}"+authedUser.getEmail());
             authedUser.setUserCredential(null);
             signin_response.setData(authedUser);
@@ -137,25 +141,46 @@ public class AuthService {
                     .body(signin_response);
         }
         catch(JwtException e) {
-            //todo error
-            log.error(e.getMessage());
-            throw new CustomException(ErrorCode.JWT_CREATE_ERROR);
+            return ResponseBuilder.<User>create()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .data(null)
+                    .errorResponsev2(Error.INTERNAL_SERVER_ERROR, "서버 내 JWT 생성 오류")
+                    .build();
+        }
+        catch(AuthenticationException e) {
+            return ResponseBuilder.<User>create()
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .data(null)
+                    .errorResponsev2(Error.UNAUTHORIZED, "존재하지 않는 사용자")
+                    .build();
         }
     }
-    private Authentication authUser(String username, String password){
-        try{
+    private Authentication authUser(String username, String password) throws AuthenticationException {
             var authentication = new UsernamePasswordAuthenticationToken(username,password);
             Authentication auth = authenticationManagerBuilder.getObject().authenticate(authentication);
             SecurityContextHolder.getContext().setAuthentication(auth);
             // 인증 정보 확인
             return auth;
-//            Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
-//            System.out.println("Authentication after setting: " + currentAuth);
-        }
-        catch(AuthenticationException e) {
-        //todo error
-        log.error(e.getMessage());
-        throw new CustomException(ErrorCode.MISMATCH_PASSWORD);
     }
+
+    public ResponseEntity<Response<String>> uploadProfile(MultipartFile profileImg) {
+
+            try {
+                firebaseService.uploadFile(
+                        profileImg.getOriginalFilename(), profileImg.getBytes(), profileImg.getContentType());
+            } catch(IOException e){
+                return ResponseBuilder.<String>create()
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .data(null)
+                        .errorResponsev2(Error.INTERNAL_SERVER_ERROR,"이미지의 입출력 처리 중 오류 발생")
+                        .build();
+            }
+            String profile_url = firebaseService.getFileUrl(profileImg.getOriginalFilename());
+
+            return ResponseBuilder.<String>create()
+                    .status(HttpStatus.OK)
+                    .data(profile_url)
+                    .errorResponsev2(null,"프로필 이미지 업로드 성공")
+                    .build();
     }
 }

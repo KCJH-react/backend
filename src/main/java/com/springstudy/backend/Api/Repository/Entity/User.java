@@ -33,9 +33,10 @@ public class User {
 
     private String goal;
 
+    private String profileImg;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_credential_id", referencedColumnName = "id", nullable = false, unique = true
-//    foreignKey = @ForeignKey(name = "fk_users_user_credentials")
     )
     private UserCredential user_credential;
 

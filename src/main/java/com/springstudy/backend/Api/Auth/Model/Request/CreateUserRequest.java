@@ -6,6 +6,7 @@ import com.springstudy.backend.Common.Type.Sex;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.web.multipart.MultipartFile;
 
 @Schema(description = "회원 가입 요청")
 public record CreateUserRequest (
@@ -33,6 +34,9 @@ public record CreateUserRequest (
         String goal,
 
         @Schema(description = "선호챌린지")
-        Challenge[] preferredChallenge
+        Challenge[] preferredChallenge,
+
+        @Schema(description = "이미지 url")
+        String imgUrl
 ){
 }
