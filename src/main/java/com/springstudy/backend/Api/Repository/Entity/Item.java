@@ -18,7 +18,7 @@ public class Item {
     private Long id;
     private int points;
     private String title;
-
+    private String imgTitle;
     @Enumerated(EnumType.STRING)
     private ItemCategory itemCategory;
 }

@@ -5,7 +5,6 @@ import lombok.Builder;
 
 @Builder
 public record ItemDTO(
-        Long id,
         String title,
         String Url,
         int points,
