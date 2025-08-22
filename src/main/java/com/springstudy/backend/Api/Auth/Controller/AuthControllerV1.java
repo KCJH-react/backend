@@ -1,12 +1,12 @@
 package com.springstudy.backend.Api.Auth.Controller;
 
-import com.springstudy.backend.Api.Auth.Model.Request.CreateUserRequest;
-import com.springstudy.backend.Api.Auth.Model.Request.LoginRequest;
-import com.springstudy.backend.Api.Auth.Model.Request.UpdateRequest;
+import com.springstudy.backend.Api.Auth.Model.Request.*;
 import com.springstudy.backend.Api.Auth.Service.AuthService;
+import com.springstudy.backend.Api.Auth.Service.EmailService;
 import com.springstudy.backend.Api.Repository.Entity.User;
 import com.springstudy.backend.Response;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class AuthControllerV1 {
     private final AuthService authService;
+    public final EmailService emailService;
 
     @PostMapping("/signup")
     public ResponseEntity<Response<User>> signup(@RequestBody CreateUserRequest createUserRequest) {
@@ -41,5 +42,14 @@ public class AuthControllerV1 {
     @PutMapping("/update/{id}")
     public ResponseEntity<Response<User>>  update(UpdateRequest updateRequest, @PathVariable Long id) {
         return authService.update(updateRequest, id);
+    }
+
+    @PostMapping("/send")
+    public ResponseEntity<Response<String>> sendEmail(@RequestBody @Valid EmailRequest emailRequest) {
+        return emailService.sendMail(emailRequest);
+    }
+    @PostMapping("/check")
+    public ResponseEntity<Response<String>> checkEmail(@RequestBody @Valid EmailVerifyRequest emailRequest) {
+        return emailService.CheckAuthNum(emailRequest);
     }
 }

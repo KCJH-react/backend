@@ -84,6 +84,7 @@ public class EmailService {
 
     //추가 되었다.
     public ResponseEntity<Response<String>> CheckAuthNum(EmailVerifyRequest emailRequest){
+
         String authNum = emailRequest.authnum();
         String email = emailRequest.email();
         String storedEmail = redisUtil.getData(authNum);
