@@ -29,9 +29,14 @@ public class AuthControllerV1 {
         System.out.println(httpServletRequest.getCookies());
         return authService.signin(loginRequest);
     }
-    @PostMapping(value = "/profileUpload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Response<String>> profileUpload(@RequestPart MultipartFile profileImg){
         return authService.uploadProfile(profileImg);
+    }
+
+    @PutMapping(value = "/profile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Response<String>> profileUpdate(@RequestPart MultipartFile profileImg, @PathVariable Long id){
+        return authService.updateProfile(profileImg, id);
     }
     @PutMapping("/update/{id}")
     public ResponseEntity<Response<User>>  update(UpdateRequest updateRequest, @PathVariable Long id) {

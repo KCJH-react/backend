@@ -188,6 +188,50 @@ public class AuthService {
                     .build();
     }
 
+    public ResponseEntity<Response<String>> updateProfile(MultipartFile profileImg, Long id) {
+
+        Optional<User> userOptional = userRepository.findById(id);
+        if(userOptional.isEmpty()) {
+            //예외처리
+        }
+        String originProfile = userOptional.get().getProfileImg();
+        boolean deleteOrigin = firebaseService.deleteFile(originProfile);
+        if(!deleteOrigin) {
+            log.error("기존 프로필 이미지가 삭제되지 않음: {}", deleteOrigin);
+        }
+        try{
+            firebaseService.uploadFile(profileImg.getOriginalFilename(), profileImg.getBytes(), profileImg.getContentType());
+        }
+        catch(IOException e){
+            //예외처리
+        }
+        String newProfileUrl = firebaseService.getFileUrl(profileImg.getOriginalFilename());
+
+                return ResponseBuilder.<String>create()
+                .status(HttpStatus.OK)
+                .data(newProfileUrl)
+                .errorResponsev2(null,"프로필 이미지 업로드 및 변경 성공")
+                .build();
+
+//        try {
+//            firebaseService.uploadFile(
+//                    profileImg.getOriginalFilename(), profileImg.getBytes(), profileImg.getContentType());
+//        } catch(IOException e){
+//            return ResponseBuilder.<String>create()
+//                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .data(null)
+//                    .errorResponsev2(Error.INTERNAL_SERVER_ERROR,"이미지의 입출력 처리 중 오류 발생")
+//                    .build();
+//        }
+//        String profile_url = firebaseService.getFileUrl(profileImg.getOriginalFilename());
+//
+//        return ResponseBuilder.<String>create()
+//                .status(HttpStatus.OK)
+//                .data(profile_url)
+//                .errorResponsev2(null,"프로필 이미지 업로드 성공")
+//                .build();
+    }
+
     public ResponseEntity<Response<User>> update(UpdateRequest updateRequest, Long id) {
         // 1. 비번 검사.
         // 2. 변경할 정보 유형 확인.

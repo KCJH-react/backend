@@ -34,4 +34,31 @@ public class FirebaseService {
         Bucket bucket = StorageClient.getInstance().bucket(bucketName);
         bucket.create(fileName, content, contentType);
     }
+
+    public boolean deleteFile(String fileUrl) {
+        Bucket bucket = StorageClient.getInstance().bucket(bucketName);
+
+        try {
+            // URL에서 fileName 추출 (버킷 경로 이후 부분)
+            String prefix = "https://storage.googleapis.com/" + bucketName + "/";
+            String fileName;
+
+            if (fileUrl.startsWith(prefix)) {
+                fileName = fileUrl.substring(prefix.length());
+            } else {
+                // signedUrl일 경우 쿼리 파라미터 제거
+                fileName = fileUrl.split("\\?")[0].replaceAll(".*/o/", "").replace("%2F", "/");
+            }
+
+            Blob blob = bucket.get(fileName);
+            if (blob != null) {
+                return blob.delete(); // 성공하면 true
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
 }
