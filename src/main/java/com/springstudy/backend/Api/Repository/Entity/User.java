@@ -33,7 +33,8 @@ public class User {
 
     private String goal;
 
-    private String profileImg;
+    @Lob
+    private String imgUrl;
 
     private int points;
 

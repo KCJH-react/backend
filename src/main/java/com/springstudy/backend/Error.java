@@ -12,5 +12,6 @@ public enum Error {
     BUSINESS_LOGIC_ERROR,   // 비즈니스 예외
     EXTERNAL_API_ERROR,     // 외부 API 호출 실패
     TIMEOUT,                // 시간 초과
-    UNKNOWN_ERROR           // 알 수 없는 에러
+    UNKNOWN_ERROR,           // 알 수 없는 에러
+    OK
 }

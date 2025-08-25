@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.springstudy.backend.Common.Type.Challenge;
 import com.springstudy.backend.Common.Type.Sex;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
+import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +39,7 @@ public record CreateUserRequest (
         Challenge[] preferredChallenge,
 
         @Schema(description = "이미지 url")
+        @Lob
         String imgUrl
 ){
 }

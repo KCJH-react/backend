@@ -75,7 +75,7 @@ public class AuthService {
                 .goal(request.goal())
                 .email(request.email())
                 .username(request.username())
-                .profileImg(request.imgUrl())
+                .imgUrl(request.imgUrl())
                 .points(0)
                 .user_credential(userCredential)
                 .build();
@@ -130,6 +130,7 @@ public class AuthService {
             log.info("login 성공 {}"+authedUser.getEmail());
             authedUser.setUserCredential(null);
             signin_response.setData(authedUser);
+            signin_response.setErrorResponsev2(new ErrorResponsev2(Error.OK, "로그인 성공"));
 
             ResponseCookie refreshCookie = ResponseCookie
                     .from("refresh_token")
@@ -184,7 +185,7 @@ public class AuthService {
             return ResponseBuilder.<String>create()
                     .status(HttpStatus.OK)
                     .data(profile_url)
-                    .errorResponsev2(null,"프로필 이미지 업로드 성공")
+                    .errorResponsev2(Error.OK,"프로필 이미지 업로드 성공")
                     .build();
     }
 
@@ -194,7 +195,7 @@ public class AuthService {
         if(userOptional.isEmpty()) {
             //예외처리
         }
-        String originProfile = userOptional.get().getProfileImg();
+        String originProfile = userOptional.get().getImgUrl();
         boolean deleteOrigin = firebaseService.deleteFile(originProfile);
         if(!deleteOrigin) {
             log.error("기존 프로필 이미지가 삭제되지 않음: {}", deleteOrigin);
@@ -210,26 +211,8 @@ public class AuthService {
                 return ResponseBuilder.<String>create()
                 .status(HttpStatus.OK)
                 .data(newProfileUrl)
-                .errorResponsev2(null,"프로필 이미지 업로드 및 변경 성공")
+                .errorResponsev2(Error.OK,"프로필 이미지 업로드 및 변경 성공")
                 .build();
-
-//        try {
-//            firebaseService.uploadFile(
-//                    profileImg.getOriginalFilename(), profileImg.getBytes(), profileImg.getContentType());
-//        } catch(IOException e){
-//            return ResponseBuilder.<String>create()
-//                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .data(null)
-//                    .errorResponsev2(Error.INTERNAL_SERVER_ERROR,"이미지의 입출력 처리 중 오류 발생")
-//                    .build();
-//        }
-//        String profile_url = firebaseService.getFileUrl(profileImg.getOriginalFilename());
-//
-//        return ResponseBuilder.<String>create()
-//                .status(HttpStatus.OK)
-//                .data(profile_url)
-//                .errorResponsev2(null,"프로필 이미지 업로드 성공")
-//                .build();
     }
 
     public ResponseEntity<Response<User>> update(UpdateRequest updateRequest, Long id) {
@@ -244,7 +227,7 @@ public class AuthService {
             return ResponseBuilder.<User>create()
                     .data(null)
                     .errorResponsev2(Error.NOT_FOUND,"회원이 존재하지 않습니다.")
-                    .status(HttpStatus.OK)
+                    .status(HttpStatus.NOT_FOUND)
                     .build();
         }
 
@@ -274,7 +257,7 @@ public class AuthService {
 
         return ResponseBuilder.<User>create()
                 .data(UpdatedUser)
-                .errorResponsev2(null,"유저 정보 수정 성공")
+                .errorResponsev2(Error.OK,"유저 정보 수정 성공")
                 .status(HttpStatus.OK)
                 .build();
     }

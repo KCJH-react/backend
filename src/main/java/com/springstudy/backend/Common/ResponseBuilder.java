@@ -24,7 +24,10 @@ public class ResponseBuilder<T> {
         return this;
     }
     public ResponseBuilder<T> errorResponsev2(Error code, String message){
-        if(code == null) log.info(message);
+        if(code == Error.OK){
+            log.info(message);
+            this.errorResponsev2 = new ErrorResponsev2(null, message);
+        }
         else {
             log.error(message);
             this.errorResponsev2 = new ErrorResponsev2(code, message);

@@ -78,7 +78,7 @@ public class EmailService {
         return ResponseBuilder.<String>create()
                 .status(HttpStatus.OK)
                 .data(null)
-                .errorResponsev2(null,"인증 번호 발송")
+                .errorResponsev2(Error.OK,"인증 번호 발송")
                 .build();
     }
 
@@ -106,7 +106,7 @@ public class EmailService {
         return ResponseBuilder.<String>create()
                 .status(HttpStatus.OK)
                 .data(null)
-                .errorResponsev2(null,"인증 성공")
+                .errorResponsev2(Error.OK,"인증 성공")
                 .build();
     }
 }
