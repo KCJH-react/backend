@@ -1,25 +1,24 @@
 package com.springstudy.backend.Api.Auth.Controller;
 
-import com.springstudy.backend.Api.Auth.Model.Request.CreateUserRequest;
-import com.springstudy.backend.Api.Auth.Model.Request.LoginRequest;
-import com.springstudy.backend.Api.Auth.Model.Response.LoginResponse;
+import com.springstudy.backend.Api.Auth.Model.Request.*;
 import com.springstudy.backend.Api.Auth.Service.AuthService;
+import com.springstudy.backend.Api.Auth.Service.EmailService;
 import com.springstudy.backend.Api.Repository.Entity.User;
 import com.springstudy.backend.Response;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("api/v1/user")
 @RequiredArgsConstructor
 public class AuthControllerV1 {
     private final AuthService authService;
+    public final EmailService emailService;
 
     @PostMapping("/signup")
     public ResponseEntity<Response<User>> signup(@RequestBody CreateUserRequest createUserRequest) {
@@ -30,5 +29,27 @@ public class AuthControllerV1 {
                                                  HttpServletRequest httpServletRequest) {
         System.out.println(httpServletRequest.getCookies());
         return authService.signin(loginRequest);
+    }
+    @PostMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Response<String>> profileUpload(@RequestPart MultipartFile profileImg){
+        return authService.uploadProfile(profileImg);
+    }
+
+    @PutMapping(value = "/profile/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Response<String>> profileUpdate(@RequestPart MultipartFile profileImg, @PathVariable Long id){
+        return authService.updateProfile(profileImg, id);
+    }
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Response<User>>  update(UpdateRequest updateRequest, @PathVariable Long id) {
+        return authService.update(updateRequest, id);
+    }
+
+    @PostMapping("/send")
+    public ResponseEntity<Response<String>> sendEmail(@RequestBody @Valid EmailRequest emailRequest) {
+        return emailService.sendMail(emailRequest);
+    }
+    @PostMapping("/check")
+    public ResponseEntity<Response<String>> checkEmail(@RequestBody @Valid EmailVerifyRequest emailRequest) {
+        return emailService.CheckAuthNum(emailRequest);
     }
 }
