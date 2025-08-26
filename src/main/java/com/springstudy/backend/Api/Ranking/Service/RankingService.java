@@ -29,7 +29,7 @@ public class RankingService {
 
             // ✅ 기존 데이터가 있으면 업데이트, 없으면 생성
             Ranking ranking = rankingRepository.findByUserid(userid)
-                    .orElse(new Ranking(userid, 0));
+                    .orElse(new Ranking(userid, "기본", 0));
 
             ranking.setScore(ranking.getScore() + request.score()); // ✅ 점수 누적
             rankingRepository.save(ranking);

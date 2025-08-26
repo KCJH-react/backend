@@ -49,3 +49,6 @@ token: # ??? ????
 #  url: ${GEMINI}
 firebase:
   bucketName: imgstorage-6ba5c.firebasestorage.app
+openai:
+  model: ${MODEL}
+  secret-key: ${GPT}

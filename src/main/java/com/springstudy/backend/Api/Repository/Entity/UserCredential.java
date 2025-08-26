@@ -10,7 +10,6 @@ import lombok.*;
 @Getter
 @Table(name = "user_credentials")
 public class UserCredential {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
