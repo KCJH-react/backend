@@ -7,8 +7,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "challenges")
 public class Challenge {
@@ -16,9 +17,11 @@ public class Challenge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String challengeTitle;
+    private String difficulty;
 
-    private String limitTime;
+    private int duration;
 
-    private LocalDateTime current;
+    private String reason;
+
+    private String content;
 }

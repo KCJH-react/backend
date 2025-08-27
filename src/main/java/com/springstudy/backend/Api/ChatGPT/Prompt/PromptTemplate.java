@@ -21,7 +21,7 @@ public class PromptTemplate {
         }
 
         return String.format("""
-                너는 %s의 향상을 돕는 랜덤챌린지 추천 AI야.
+                너는 %s의 향상을 돕는 랜덤챌린지 추천 AI야. 답변은 JSON형식이야.
                 """, categoryText);
     }
 
