@@ -21,4 +21,11 @@ public class Item {
     private String imgTitle;
     @Enumerated(EnumType.STRING)
     private ItemCategory itemCategory;
+
+    @Lob
+    private String url;
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

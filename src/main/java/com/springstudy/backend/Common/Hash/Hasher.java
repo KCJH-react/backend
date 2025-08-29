@@ -2,12 +2,14 @@ package com.springstudy.backend.Common.Hash;
 
 import com.springstudy.backend.Config.SecurityConfig;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class Hasher {
     private static PasswordEncoder passwordEncoder;
 
@@ -22,6 +24,8 @@ public class Hasher {
         return passwordEncoder.encode(password);
     }
     public static boolean matches(String password, String hashedPassword) {
+        log.info("입력된 비밀번호: {}", password);
+        if(password == null)return false;
         return passwordEncoder.matches(password, hashedPassword);
     }
 }

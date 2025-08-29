@@ -2,15 +2,14 @@ package com.springstudy.backend.Api.Auth.Service;
 import com.springstudy.backend.Api.Auth.Model.Request.CreateUserRequest;
 import com.springstudy.backend.Api.Auth.Model.Request.LoginRequest;
 import com.springstudy.backend.Api.Auth.Model.Request.UpdateRequest;
-import com.springstudy.backend.Api.Repository.Entity.PreferredChallenge;
+import com.springstudy.backend.Api.Auth.Model.UserDTO;
+import com.springstudy.backend.Api.Repository.Entity.UserCategory;
 import com.springstudy.backend.Api.Repository.Entity.User;
 import com.springstudy.backend.Api.Repository.Entity.UserCredential;
-import com.springstudy.backend.Api.Repository.Entity.User_preferedChallenge;
-import com.springstudy.backend.Api.Repository.PreferredChallengeRepository;
+import com.springstudy.backend.Api.Repository.Entity.User_UserCategory;
+import com.springstudy.backend.Api.Repository.UserCategoryRepository;
 import com.springstudy.backend.Api.Repository.UserRepository;
-import com.springstudy.backend.Api.Repository.User_preferredChallengeRepository;
-import com.springstudy.backend.Common.ErrorCode.CustomException;
-import com.springstudy.backend.Common.ErrorCode.ErrorCode;
+import com.springstudy.backend.Api.Repository.User_UserCategoryRepository;
 import com.springstudy.backend.Common.FirebaseService;
 import com.springstudy.backend.Common.Hash.Hasher;
 import com.springstudy.backend.Common.JWTToken;
@@ -38,6 +37,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -45,8 +46,7 @@ import java.util.Optional;
 @Slf4j
 public class AuthService {
     private final UserRepository userRepository;
-    private final PreferredChallengeRepository preferredChallengeRepository;
-    private final User_preferredChallengeRepository user_preferredChallengeRepository;
+    private final UserCategoryRepository userCategoryRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final FirebaseService firebaseService;
 
@@ -78,17 +78,21 @@ public class AuthService {
                 .imgUrl(request.imgUrl())
                 .points(0)
                 .user_credential(userCredential)
+                .user_userCategoryList(new ArrayList<User_UserCategory>())
                 .build();
 
         try{
-            User savedUser = userRepository.save(newUser);
 
             for(Challenge c : request.preferredChallenge()){
-                PreferredChallenge pc = PreferredChallenge.builder().challenge(c).build();
-                preferredChallengeRepository.save(pc);
-                User_preferedChallenge u_p = User_preferedChallenge.builder().user(savedUser).preferredChallenge(pc).build();
-                user_preferredChallengeRepository.save(u_p);
+                UserCategory pc = UserCategory.builder().challenge(c).build();
+                userCategoryRepository.save(pc);
+                User_UserCategory u_p = User_UserCategory.builder()
+                        .user(newUser)
+                        .userCategory(pc)
+                        .build();
+                newUser.setUser_userCategory(u_p);
             }
+            User savedUser = userRepository.save(newUser);
             savedUser.setUserCredential(null);
             return ResponseBuilder.<User>create()
                     .status(HttpStatus.OK)
@@ -100,7 +104,7 @@ public class AuthService {
             return ResponseBuilder.<User>create()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .data(null)
-                    .errorResponsev2(Error.DATABASE_ERROR, "사용자 정보 저장 중 오류 발생")
+                    .errorResponsev2(Error.DATABASE_ERROR, "사용자 정보 저장 중 오류 발생"+ e.getMessage())
                     .build();
         }
     }
@@ -114,22 +118,23 @@ public class AuthService {
         
         Response<User> signin_response = new Response<>(null, null);
 
-        Optional<User> user = userRepository.findByEmail(request.email());
-        System.out.println("email: "+request.email()+"user: "+user.isPresent());
-        if(user.isEmpty()) {
+        Optional<User> userOptional = userRepository.findByEmail(request.email().trim().toLowerCase());
+
+        System.out.println("email: "+request.email()+"user: "+userOptional.isPresent());
+        if(userOptional.isEmpty()) {
             return ResponseBuilder.<User>create()
                     .status(HttpStatus.UNAUTHORIZED)
                     .data(null)
-                    .errorResponsev2(Error.UNAUTHORIZED, "존재하지 않는 사용자")
+                    .errorResponsev2(Error.UNAUTHORIZED, "이메일과 일치하는 사용자가 없음")
                     .build();
         }
         try{
-            Authentication auth = authUser(user.get().getUsername(),request.password());
-            User authedUser = userRepository.findByUsername(auth.getName()).get();
+            User user = userOptional.get();
+            Authentication auth = authUser(user.getUsername(),request.password());
             JWTToken jwtToken = JWTUtil.generateToken(auth);
-            log.info("login 성공 {}"+authedUser.getEmail());
-            authedUser.setUserCredential(null);
-            signin_response.setData(authedUser);
+            log.info("login 성공 {}"+user.getEmail());
+            user.setUserCredential(null);
+            signin_response.setData(user);
             signin_response.setErrorResponsev2(new ErrorResponsev2(Error.OK, "로그인 성공"));
 
             ResponseCookie refreshCookie = ResponseCookie
@@ -156,7 +161,7 @@ public class AuthService {
             return ResponseBuilder.<User>create()
                     .status(HttpStatus.UNAUTHORIZED)
                     .data(null)
-                    .errorResponsev2(Error.UNAUTHORIZED, "존재하지 않는 사용자")
+                    .errorResponsev2(Error.UNAUTHORIZED, "존재하지 않는 사용자"+ e.getMessage())
                     .build();
         }
     }
@@ -170,9 +175,15 @@ public class AuthService {
 
     public ResponseEntity<Response<String>> uploadProfile(MultipartFile profileImg) {
 
+        String length = String.valueOf(userRepository.findAll().size());
+
+
+        if(firebaseService.getFileUrl(length+"_img") != null){
+            firebaseService.deleteFile(length+"_img");
+        }
             try {
                 firebaseService.uploadFile(
-                        profileImg.getOriginalFilename(), profileImg.getBytes(), profileImg.getContentType());
+                        length+"_img", profileImg.getBytes(), profileImg.getContentType());
             } catch(IOException e){
                 return ResponseBuilder.<String>create()
                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -180,8 +191,10 @@ public class AuthService {
                         .errorResponsev2(Error.INTERNAL_SERVER_ERROR,"이미지의 입출력 처리 중 오류 발생")
                         .build();
             }
-            String profile_url = firebaseService.getFileUrl(profileImg.getOriginalFilename());
 
+            String profile_url = firebaseService.getFileUrl(length+"_img");
+
+            log.info("tlitle:" + length + "_img profile_url "+profile_url);
             return ResponseBuilder.<String>create()
                     .status(HttpStatus.OK)
                     .data(profile_url)
@@ -233,6 +246,7 @@ public class AuthService {
 
         String user_password = userOptional.get().getUser_credential().getPassword();
         String password = updateRequest.password();
+        log.info("password: "+password);
         if(!Hasher.matches(password,user_password)){
             //예외처리
             return ResponseBuilder.<User>create()
@@ -263,6 +277,7 @@ public class AuthService {
     }
 
     private boolean typeValid(UserInfoType type, String content) {
+        log.info("type {}, content {}", type, content);
         if(content == null || content.length() == 0) return false;
         switch(type){
             case USERNAME: return true;
@@ -291,5 +306,41 @@ public class AuthService {
             case GOAL: user.setGoal(content); break;
         }
         return userRepository.save(user);
+    }
+
+    public ResponseEntity<Response<UserDTO>> get(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isEmpty()) {
+            //예외처리
+            return ResponseBuilder.<UserDTO>create()
+                    .status(HttpStatus.BAD_REQUEST)
+                    .errorResponsev2(Error.BAD_REQUEST, "존재하지 않는 유저")
+                    .data(null).build();
+        }
+        User user = userOptional.get();
+        List<Challenge> category = new ArrayList<Challenge>();
+        for(User_UserCategory challenge:
+                user.getUser_userCategoryList()){
+            Optional<UserCategory> userCategoryOptional = userCategoryRepository.findById(challenge.getUserCategory().getId());
+            if(userCategoryOptional.isPresent()){
+                //예외처리
+            }
+            category.add(userCategoryOptional.get().getChallenge());
+        }
+        UserDTO userDTO = UserDTO.builder()
+                .points(user.getPoints())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .imgUrl(user.getImgUrl())
+                .sex(user.getSex())
+                .birthday(user.getBirthday())
+                .goal(user.getGoal())
+                .category(category)
+                .build();
+
+        return ResponseBuilder.<UserDTO>create()
+                .status(HttpStatus.OK)
+                .errorResponsev2(Error.OK, "유저 정보 조회 성공")
+                .data(userDTO).build();
     }
 }

@@ -10,6 +10,7 @@ import com.springstudy.backend.Api.Repository.PointExchangeRepository;
 import com.springstudy.backend.Common.FirebaseService;
 import com.springstudy.backend.Common.ResponseBuilder;
 import com.springstudy.backend.Response;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,10 +73,8 @@ public class PointExchangeService {
         List<Item> items = itemRepository.findAll();
         List<ItemDTO> itemDTOList = new ArrayList<>();
         for(Item item : items) {
-            String url = firebaseService.getFileUrl(item.getImgTitle());
-            if(url == null) continue;
             ItemDTO itemDTO = ItemDTO.builder()
-                    .Url(url)
+                    .Url(item.getUrl())
                     .title(item.getTitle())
                     .itemCategory(item.getItemCategory())
                     .points(item.getPoints())
@@ -89,5 +88,16 @@ public class PointExchangeService {
                 .data(itemDTOList)
                 .build();
 
+    }
+
+    public void preloadImg(){
+        List<Item> items = itemRepository.findAll();
+        for(Item item : items) {
+            if(item.getUrl() != null) continue; // 나중에 지울 것.
+            String url = firebaseService.getFileUrl(item.getImgTitle());
+            item.setUrl(url);
+            itemRepository.save(item);
+        }
+        System.out.println("✅ 파이어베이스 이미지 URL 프리로드 완료");
     }
 }
