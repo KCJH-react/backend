@@ -38,6 +38,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -292,4 +295,18 @@ public class AuthService {
         }
         return userRepository.save(user);
     }
+
+//    private Map<String, Object> getInfo(Long userId) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+//
+//        List<PreferredChallenge> challenges = preferredChallengeRepository.findByuserId(userId);
+//
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("age", user.getAge());
+//        result.put("sex", user.getSex());
+//        result.put("preferredChallenges",
+//                challenges.stream().map(pc -> pc.getChallenge().name()).toList());
+//        return result;
+//    }
 }

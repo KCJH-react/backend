@@ -24,4 +24,8 @@ public class Challenge {
     private String reason;
 
     private String content;
+
+    private Long userid;
+
+    private Boolean success = false;
 }

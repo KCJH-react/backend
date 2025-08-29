@@ -31,12 +31,13 @@ public class ChatGPTController {
             @RequestParam List<String> categories,
             @RequestParam int age,
             @RequestParam String sex,
-            @RequestParam int successRate
+            @RequestParam int successRate,
+            @RequestParam Long userid
     ) {
         String system_prompt = PromptTemplate.generateSystemPrompt(categories);
         String user_prompt = PromptTemplate.generateUserPrompt(categories, age, sex, successRate);
 
-        return chatService.makeChallengeResult(system_prompt, user_prompt);
+        return chatService.makeChallengeResult(system_prompt, user_prompt, userid);
     }
 
     @GetMapping("/test")

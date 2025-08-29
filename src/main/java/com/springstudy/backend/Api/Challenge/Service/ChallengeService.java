@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -50,6 +51,10 @@ public class ChallengeService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<Challenge> getSuccessChallenges(Long userId) {
+        return challengeRepository.findByUseridAndSuccessTrue(userId);
     }
 
 //    public ResponseEntity<Response<Challenge>> makeChallenge(Long userid) {

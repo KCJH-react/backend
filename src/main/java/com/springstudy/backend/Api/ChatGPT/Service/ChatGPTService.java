@@ -5,11 +5,13 @@ import com.springstudy.backend.Api.Challenge.Model.Response.ChallengeResponse;
 import com.springstudy.backend.Api.ChatGPT.Model.Request.ChatGPTRequestDTO;
 import com.springstudy.backend.Api.ChatGPT.Model.Response.ChatGPTResponseDTO;
 import com.springstudy.backend.Api.ChatGPT.Model.ChatMessage;
+import com.springstudy.backend.Api.Repository.ChallengeRepository;
 import com.springstudy.backend.Api.Repository.Entity.Challenge;
 import com.springstudy.backend.Api.Repository.Entity.User;
 import com.springstudy.backend.Common.ResponseBuilder;
 import com.springstudy.backend.ErrorResponsev2;
 import com.springstudy.backend.Response;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,8 +29,15 @@ public class ChatGPTService {
     private final String OPENAI_API_KEY;
     private final String OPENAI_MODEL;
 
+    private final ChallengeRepository challengeRepository;
 
-    public ChatGPTService() {
+    public Challenge saveChallenge(ChallengeResponse response, Long userId) {
+        Challenge challenge = response.toEntity(userId);
+        return challengeRepository.save(challenge);
+    }
+
+    public ChatGPTService(ChallengeRepository challengeRepository) {
+        this.challengeRepository = challengeRepository;
         Dotenv dotenv = Dotenv.load();
         this.OPENAI_API_KEY = dotenv.get("GPT");
         this.OPENAI_MODEL = dotenv.get("MODEL");
@@ -80,7 +89,7 @@ public class ChatGPTService {
                 });
     }
 
-    public ResponseEntity<Response<ChallengeResponse>> makeChallengeResult(String systemPrompt, String userPrompt) {
+    public ResponseEntity<Response<ChallengeResponse>> makeChallengeResult(String systemPrompt, String userPrompt, Long userId) {
         Response<ChallengeResponse> response = new Response<>(null, null);
         ChallengeResponse challengeResponse = makeChallengeGPT(systemPrompt, userPrompt).block();
         try {
@@ -91,6 +100,7 @@ public class ChatGPTService {
                         .errorResponsev2(com.springstudy.backend.Error.EXTERNAL_API_ERROR, "GPT 챌린지 생성중 에러 발생")
                         .build();
             }
+            saveChallenge(challengeResponse, userId);
             return ResponseBuilder.<ChallengeResponse>create()
                     .status(HttpStatus.OK)
                     .data(challengeResponse)
@@ -105,4 +115,6 @@ public class ChatGPTService {
                     .build();
         }
     }
+
+
 }

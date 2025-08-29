@@ -2,6 +2,7 @@ package com.springstudy.backend.Api.Challenge.Model.Response;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.springstudy.backend.Api.Repository.Entity.Challenge;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,18 @@ public class ChallengeResponse {
     @JsonProperty("추천 이유")
     @JsonAlias({"추천이유"})
     private String reason;
+
+    public Challenge toEntity(Long userId) {
+        return new Challenge(
+                null,
+                this.difficult,
+                this.getDuration(),
+                this.reason,
+                this.content,
+                userId,
+                true //일시적으로 true 세팅
+        );
+    }
 
     public int getDuration() {
         if (durationRaw == null) return 0;
