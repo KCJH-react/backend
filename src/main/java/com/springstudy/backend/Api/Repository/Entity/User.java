@@ -1,5 +1,6 @@
 package com.springstudy.backend.Api.Repository.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.springstudy.backend.Common.Type.Challenge;
 import com.springstudy.backend.Common.Type.Sex;
@@ -39,6 +40,14 @@ public class User {
     private String imgUrl;
 
     private int points;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<User_UserCategory> user_userCategoryList = new ArrayList<>();
+
+    public void setUser_userCategory(User_UserCategory user_userCategory) {
+        user_userCategoryList.add(user_userCategory);
+    }
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_credential_id", referencedColumnName = "id", nullable = false, unique = true
