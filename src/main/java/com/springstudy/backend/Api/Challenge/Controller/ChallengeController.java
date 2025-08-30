@@ -1,6 +1,7 @@
 package com.springstudy.backend.Api.Challenge.Controller;
 
 import com.springstudy.backend.Api.Challenge.Service.ChallengeService;
+import com.springstudy.backend.Api.Repository.Entity.Challenge;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -8,6 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/challenge")
@@ -34,5 +37,10 @@ public class ChallengeController {
         } else {
             return ResponseEntity.status(500).body("챌린지 완료 실패");
         }
+    }
+    @GetMapping("/getsuccess")
+    public ResponseEntity<List<Challenge>> getSuccessChallenges(@RequestParam Long userId) {
+        List<Challenge> challenges = challengeService.getSuccessChallenges(userId);
+        return ResponseEntity.ok(challenges);
     }
 }

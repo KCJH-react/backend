@@ -57,4 +57,14 @@ public class User {
     public void setUserCredential(UserCredential user_credential) {
         this.user_credential = user_credential;
     }
+
+    public int getAge() {
+        if (this.birthday == null) return 0;
+
+        LocalDate birthDate = LocalDate.parse(this.birthday);
+        LocalDate today = LocalDate.now();
+
+        return today.getYear() - birthDate.getYear() -
+                ((today.getDayOfYear() < birthDate.getDayOfYear()) ? 1 : 0);
+    }
 }
