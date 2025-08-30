@@ -23,7 +23,7 @@ public class AuthControllerV1 {
     private final AuthService authService;
     public final EmailService emailService;
 
-    @GetMapping("/user")
+    @GetMapping("/")
     public ResponseEntity<Response<UserDTO>> get(@RequestParam Long userId) {
         return authService.get(userId);
     }
@@ -45,7 +45,6 @@ public class AuthControllerV1 {
 
     @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Response<String>> profileUpdate(
-            @RequestPart String password,
             @RequestPart MultipartFile profileImg,
             @PathVariable Long id){
         return authService.updateProfile(profileImg, id);

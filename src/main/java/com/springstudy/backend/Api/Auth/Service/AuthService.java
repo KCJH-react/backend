@@ -293,6 +293,7 @@ public class AuthService {
                     return true;
                 }catch(Exception e){return false;}
             case GOAL: return true;
+            case PROFILE: return true;
         }
         return false;
     }
@@ -304,6 +305,7 @@ public class AuthService {
             case SEX: user.setSex(Sex.valueOf(content)); break;
             case BIRTHDAY: user.setBirthday(content); break;
             case GOAL: user.setGoal(content); break;
+            case PROFILE: user.setImgUrl(content); break;
         }
         return userRepository.save(user);
     }
