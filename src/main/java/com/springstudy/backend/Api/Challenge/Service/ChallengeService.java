@@ -1,14 +1,17 @@
 package com.springstudy.backend.Api.Challenge.Service;
 
 import com.springstudy.backend.Api.Challenge.Model.Response.ChallengeResponse;
+import com.springstudy.backend.Api.Challenge.Model.Response.PersonalChallengeResponse;
 import com.springstudy.backend.Api.Repository.ChallengeRepository;
-import com.springstudy.backend.Api.Repository.Entity.Challenge;
-import com.springstudy.backend.Api.Repository.Entity.User;
+import com.springstudy.backend.Api.Repository.Entity.*;
+import com.springstudy.backend.Api.Repository.PersonalChallengeRepository;
 import com.springstudy.backend.Api.Repository.PrivateChallengeRepository;
 import com.springstudy.backend.Api.Repository.UserRepository;
+import com.springstudy.backend.Common.ResponseBuilder;
 import com.springstudy.backend.ErrorResponsev2;
 import com.springstudy.backend.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,12 @@ public class ChallengeService {
 
     @Autowired
     private PrivateChallengeRepository privateChallengeRepository;
+
+    @Autowired
+    private PersonalChallengeRepository personalChallengeRepository;
+
+    @Autowired
+    private UserChallengeRepository userChallengeRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -57,10 +66,55 @@ public class ChallengeService {
         return challengeRepository.findByUseridAndSuccessTrue(userId);
     }
 
-//    public ResponseEntity<Response<Challenge>> makeChallenge(Long userid) {
-//        Response<Challenge> challenge_response = new Response<>(null, null);
-//        //ChatGPTservice에 있는 챌린지를 만드는 함수에 필요한 유저 정보를 여기에 입력될 userId를 통해 검색하고 해당 값을 인자로 GPTservice를 호출해
-//        //챌린지를 생성하고 해당 챌린지를 JSON 형태로 분해해서 프론트에 전달하기
-//
-//    }
+    
+    //개인 챌린지 저장용
+    public PersonalChallenge savePersonalChallenge(
+            Long userid, String personalName, String personalCompletionAction,
+            Long personalDuration, String personalIcon, String personalCategory
+    ) {
+        User user = userRepository.findById(userid)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+        PersonalChallenge challenge = PersonalChallenge.builder()
+                .personalName(personalName)
+                .personalCompletionAction(personalCompletionAction)
+                .personalDuration(personalDuration)
+                .personalIcon(personalIcon)
+                .personalCategory(personalCategory)
+                .creatorId(userid)
+                .build();
+        personalChallengeRepository.save(challenge);
+
+        User_Challenge userChallenge = User_Challenge.builder()
+                .user(user)
+                .personalChallenge(challenge)
+                .build();
+        userChallengeRepository.save(userChallenge);
+
+        return challenge;
+    }
+
+    //개인 챌린지 저장 후 양식에 맞는 response 만들기
+    public ResponseEntity<Response<PersonalChallenge>> savePersonalChallengeResult(
+            Long userid, String personalName, String personalCompletionAction,
+            Long personalDuration, String personalIcon, String personalCategory
+    ) {
+        try {
+            PersonalChallenge personalChallengeResult = savePersonalChallenge(userid, personalName, personalCompletionAction, personalDuration, personalIcon, personalCategory);
+
+            return ResponseBuilder.<PersonalChallenge>create()
+                    .status(HttpStatus.OK)
+                    .data(personalChallengeResult)
+                    .errorResponsev2(null, "개인 챌린지 저장 성공")
+                    .build();
+
+
+        } catch (Exception e) {
+            return ResponseBuilder.<PersonalChallenge>create()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .data(null)
+                    .errorResponsev2(com.springstudy.backend.Error.DATABASE_ERROR, "개인 챌린지 저장중 에러발생")
+                    .build();
+        }
+    }
 }
