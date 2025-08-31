@@ -345,4 +345,17 @@ public class AuthService {
                 .errorResponsev2(Error.OK, "유저 정보 조회 성공")
                 .data(userDTO).build();
     }
+
+    public ResponseEntity<Response<UserDTO>> delete(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isEmpty()) {
+            //예외처리
+        }
+        userRepository.deleteById(userId);
+        return ResponseBuilder.<UserDTO>create()
+                .status(HttpStatus.OK)
+                .data(null)
+                .errorResponsev2(Error.OK, "회원삭제 완료")
+                .build();
+    }
 }

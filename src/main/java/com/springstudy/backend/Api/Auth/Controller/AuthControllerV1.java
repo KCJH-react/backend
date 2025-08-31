@@ -23,9 +23,13 @@ public class AuthControllerV1 {
     private final AuthService authService;
     public final EmailService emailService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<Response<UserDTO>> get(@RequestParam Long userId) {
         return authService.get(userId);
+    }
+    @DeleteMapping("")
+    public ResponseEntity<Response<UserDTO>> delete(@RequestParam Long userId) {
+        return authService.delete(userId);
     }
 
     @PostMapping("/signup")
