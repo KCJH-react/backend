@@ -1,11 +1,22 @@
 package com.springstudy.backend.Api.PointExchange.Model.Request;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
 public class PointExchangeRequest {
     private String username;
     private int points;
+
+    public PointExchangeRequest() {}
+
+    public String getUsername() {
+        return username;
+    }
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+    public void setPoints(int points) {
+        this.points = points;
+    }
 }
