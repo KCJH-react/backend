@@ -12,6 +12,7 @@ import com.springstudy.backend.Api.Repository.PointExchangeRepository;
 import com.springstudy.backend.Api.Repository.UserRepository;
 import com.springstudy.backend.Common.FirebaseService;
 import com.springstudy.backend.Common.ResponseBuilder;
+import com.springstudy.backend.Error;
 import com.springstudy.backend.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -88,6 +90,7 @@ public class PointExchangeService {
         for (Item item : items) {
             long purchaseCount = countMap.getOrDefault(item.getId(), 0L);
             ItemDTO itemDTO = ItemDTO.builder()
+                    .id(item.getId())
                     .Url(item.getUrl())
                     .title(item.getTitle())
                     .itemCategory(item.getItemCategory())
@@ -118,30 +121,42 @@ public class PointExchangeService {
 
     // ✅ 주문 생성(todo1): username → userId 매핑 후 주문 저장
     @Transactional
-    public ResponseEntity<Response<Map<String, Long>>> createOrder(String username, Long itemId, int quantity) {
-        var user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자: " + username));
+    public ResponseEntity<Response<String>> createOrder(Long id, Long itemId, int quantity) {
+        var user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자: " + id));
 
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이템: " + itemId));
 
-        int q = Math.max(1, quantity);
-        long priceSnapshot = (long) item.getPoints() * q;
+        int sumPoints = item.getPoints() + quantity;
+        if(user.getPoints() < sumPoints){
+            //예외처리
+            return ResponseBuilder.<String>create()
+                    .data(null)
+                    .status(HttpStatus.NOT_ACCEPTABLE)
+                    .errorResponsev2(Error.VALIDATION_ERROR, "포인트가 부족합니다")
+                    .build();
+        }
+
+        int balance = user.getPoints() - sumPoints;
+        user.setPoints(balance);
 
         ItemOrder order = ItemOrder.builder()
-                .userId(user.getId())
-                .itemId(item.getId())
-                .quantity(q)
-                .priceSnapshot(priceSnapshot)
-                .status(ItemOrder.Status.CREATED)
+                .userId(id)
+                .itemId(itemId)
+                .quantity(quantity)
+                .status(false)
+                .createdAt(LocalDateTime.now())
+                .useCode(UUID.randomUUID().toString().replace("-", "").substring(0,16).toUpperCase())
                 .build();
 
-        Long orderId = itemOrderRepository.save(order).getId();
+        userRepository.save(user);
+        itemOrderRepository.save(order);
 
-        return ResponseBuilder.<Map<String, Long>>create()
+        return ResponseBuilder.<String>create()
                 .status(HttpStatus.OK)
-                .errorResponsev2(null, "주문 생성 완료")
-                .data(Map.of("orderId", orderId))
+                .errorResponsev2(Error.OK, "주문 처리 완료")
+                .data(String.valueOf(balance))
                 .build();
     }
 }

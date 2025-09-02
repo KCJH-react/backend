@@ -34,29 +34,19 @@ public class ItemOrder {
     @Column(nullable=false)
     private Integer quantity;
 
-    @Column(name="price_snapshot", nullable=false)
-    private Long priceSnapshot;
-
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20, nullable=false)
-    private Status status;
-
     @Column(name="use_code", length=32, nullable=false, unique=true)
     private String useCode;
 
     @Column(name="created_at", nullable=false)
     private LocalDateTime createdAt;
 
-    @Column(name="used_at")
-    private LocalDateTime usedAt;
+//    public enum Status { CREATED, COMPLETED, CANCELED, USED, REFUNDED }
 
-    public enum Status { CREATED, COMPLETED, CANCELED, USED, REFUNDED }
-
-    @PrePersist
-    void prePersist() {
-        if (createdAt == null) createdAt = LocalDateTime.now();
-        if (status == null) status = Status.CREATED;
-        if (useCode == null) useCode = UUID.randomUUID().toString().replace("-", "").substring(0,16).toUpperCase();
-        if (quantity == null || quantity < 1) quantity = 1;
-    }
+//    @PrePersist
+//    void prePersist() {
+//        if (createdAt == null) createdAt = LocalDateTime.now();
+//        if (status == null) status = Status.CREATED;
+//        if (useCode == null) useCode = UUID.randomUUID().toString().replace("-", "").substring(0,16).toUpperCase();
+//        if (quantity == null || quantity < 1) quantity = 1;
+//    }
 }

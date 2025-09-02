@@ -40,11 +40,11 @@ public class PointExchangeController {
 
     // ✅ 주문 생성 API (todo1)
     @PostMapping("/orders")
-    public ResponseEntity<Response<java.util.Map<String, Long>>> createOrder(
+    public ResponseEntity<Response<String>> createOrder(
             @RequestBody OrderCreateRequest req) {
-        return pointExchangeService.createOrder(req.username(), req.itemId(), req.quantity());
+        return pointExchangeService.createOrder(req.id(), req.itemId(), req.quantity());
     }
 
     // 요청 DTO (간단히 컨트롤러에 둠)
-    public record OrderCreateRequest(String username, Long itemId, int quantity) {}
+    public record OrderCreateRequest(Long id, Long itemId, int quantity) {}
 }
