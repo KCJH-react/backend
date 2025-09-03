@@ -2,10 +2,12 @@ package com.springstudy.backend.Api.PointExchange.Service;
 
 import com.springstudy.backend.Api.PointExchange.Model.Request.PointExchangeRequest;
 import com.springstudy.backend.Api.PointExchange.Model.Response.ItemDTO;
+import com.springstudy.backend.Api.PointExchange.Model.Response.ItemOrderDTO;
 import com.springstudy.backend.Api.PointExchange.Model.Response.PointExchangeResponse;
 import com.springstudy.backend.Api.Repository.Entity.Item;
 import com.springstudy.backend.Api.Repository.Entity.ItemOrder;
 import com.springstudy.backend.Api.Repository.Entity.PointExchange;
+import com.springstudy.backend.Api.Repository.Entity.User;
 import com.springstudy.backend.Api.Repository.ItemOrderRepository;
 import com.springstudy.backend.Api.Repository.ItemRepository;
 import com.springstudy.backend.Api.Repository.PointExchangeRepository;
@@ -145,7 +147,6 @@ public class PointExchangeService {
                 .userId(id)
                 .itemId(itemId)
                 .quantity(quantity)
-                .status(false)
                 .createdAt(LocalDateTime.now())
                 .useCode(UUID.randomUUID().toString().replace("-", "").substring(0,16).toUpperCase())
                 .build();
@@ -157,6 +158,39 @@ public class PointExchangeService {
                 .status(HttpStatus.OK)
                 .errorResponsev2(Error.OK, "주문 처리 완료")
                 .data(String.valueOf(balance))
+                .build();
+    }
+
+    public ResponseEntity<Response<List<ItemOrderDTO>>> getMyItem(Long userId){
+        // 1. 아이디 확인
+        // 2. 아이템 불러오기
+        // 3. 데이터 가공 및 반환.
+
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isEmpty()){
+            //예외처리
+        }
+        List<ItemOrder> itemOrders = itemOrderRepository.findAllByUserId(userId);
+
+        if(itemOrders.size() == 0){
+            // 예외처리
+        }
+        List<ItemOrderDTO> itemOrderDTOList = new ArrayList<>();
+        for(ItemOrder itemOrder : itemOrders){
+            String itemTitle = itemRepository.findById(itemOrder.getItemId()).get().getTitle();
+            ItemOrderDTO itemOrderDTO = ItemOrderDTO.builder()
+                    .useCode(itemOrder.getUseCode())
+                    .createdAt(itemOrder.getCreatedAt())
+                    .id(itemOrder.getId())
+                    .itemTitle(itemTitle)
+                    .build();
+            itemOrderDTOList.add(itemOrderDTO);
+        }
+
+        return ResponseBuilder.<List<ItemOrderDTO>>create()
+                .data(itemOrderDTOList)
+                .errorResponsev2(Error.OK, "내 아이템 목록 반환 성공")
+                .status(HttpStatus.OK)
                 .build();
     }
 }

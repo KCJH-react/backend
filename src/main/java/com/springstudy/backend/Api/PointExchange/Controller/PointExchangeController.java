@@ -2,6 +2,7 @@ package com.springstudy.backend.Api.PointExchange.Controller;
 
 import com.springstudy.backend.Api.PointExchange.Model.Request.PointExchangeRequest;
 import com.springstudy.backend.Api.PointExchange.Model.Response.ItemDTO;
+import com.springstudy.backend.Api.PointExchange.Model.Response.ItemOrderDTO;
 import com.springstudy.backend.Api.PointExchange.Model.Response.PointExchangeResponse;
 import com.springstudy.backend.Api.PointExchange.Service.PointExchangeService;
 import com.springstudy.backend.Response;
@@ -47,4 +48,9 @@ public class PointExchangeController {
 
     // 요청 DTO (간단히 컨트롤러에 둠)
     public record OrderCreateRequest(Long id, Long itemId, int quantity) {}
+
+    @PostMapping("/myItems")
+    public ResponseEntity<Response<List<ItemOrderDTO>>> getMyItems(@RequestBody Long userId) {
+        return pointExchangeService.getMyItem(userId);
+    }
 }
