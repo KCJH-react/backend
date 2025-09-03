@@ -15,6 +15,8 @@ public interface ItemOrderRepository extends JpaRepository<ItemOrder, Long> {
             "from ItemOrder o group by o.itemId")
     List<ItemCount> countAllGroupByItem();
 
+    List<ItemOrder> findAllByUserId(Long userId);
+
     interface ItemCount {
         Long getItemId();
         Long getCnt();

@@ -119,7 +119,6 @@ public class AuthService {
         Response<User> signin_response = new Response<>(null, null);
 
         Optional<User> userOptional = userRepository.findByEmail(request.email().trim().toLowerCase());
-
         System.out.println("email: "+request.email()+"user: "+userOptional.isPresent());
         if(userOptional.isEmpty()) {
             return ResponseBuilder.<User>create()
