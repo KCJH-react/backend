@@ -10,11 +10,8 @@ import com.springstudy.backend.Api.Repository.Entity.User_UserCategory;
 import com.springstudy.backend.Api.Repository.UserCategoryRepository;
 import com.springstudy.backend.Api.Repository.UserRepository;
 import com.springstudy.backend.Api.Repository.User_UserCategoryRepository;
-import com.springstudy.backend.Common.FirebaseService;
+import com.springstudy.backend.Common.*;
 import com.springstudy.backend.Common.Hash.Hasher;
-import com.springstudy.backend.Common.JWTToken;
-import com.springstudy.backend.Common.JWTUtil;
-import com.springstudy.backend.Common.ResponseBuilder;
 import com.springstudy.backend.Common.Type.Challenge;
 import com.springstudy.backend.Common.Type.Sex;
 import com.springstudy.backend.Common.Type.UserInfoType;
@@ -22,6 +19,7 @@ import com.springstudy.backend.Error;
 import com.springstudy.backend.ErrorResponsev2;
 import com.springstudy.backend.Response;
 import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -49,6 +47,7 @@ public class AuthService {
     private final UserCategoryRepository userCategoryRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final FirebaseService firebaseService;
+    private final RedisService redisService;
 
     public ResponseEntity<Response<User>> signup(CreateUserRequest request) {
         // 1. 동일 이메일 있나 확인.
@@ -130,7 +129,7 @@ public class AuthService {
         try{
             User user = userOptional.get();
             Authentication auth = authUser(user.getUsername(),request.password());
-            JWTToken jwtToken = JWTUtil.generateToken(auth);
+            JWTToken jwtToken = JWTUtil.generateToken(auth, user.getId());
             log.info("login 성공 {}"+user.getEmail());
             user.setUserCredential(null);
             signin_response.setData(user);
@@ -143,6 +142,7 @@ public class AuthService {
                     .maxAge(3600 * 2)
                     .sameSite("Strict")
                     .build();
+            redisService.setDataExpire(user.getId().toString(), refreshCookie.toString(), 1000 * 60 * 60);
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.AUTHORIZATION, "Bearer "+ jwtToken.getAccessToken())
@@ -341,5 +341,34 @@ public class AuthService {
                 .status(HttpStatus.OK)
                 .errorResponsev2(Error.OK, "유저 정보 조회 성공")
                 .data(userDTO).build();
+    }
+
+    public ResponseEntity<Response<Boolean>> logout(HttpServletRequest request) {
+        String token = resolveToken(request);
+
+        if(token == null || !JWTUtil.validateToken(token)){
+            return ResponseBuilder.<Boolean>create()
+                    .data(null)
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .errorResponsev2(Error.UNAUTHORIZED, "유효하지 않는 토큰입니다.")
+                    .build();
+        }
+        Long userId = JWTUtil.getUserId(token);
+        boolean result = redisService.deleteData(userId.toString());
+
+        return ResponseBuilder.<Boolean>create()
+                .data(result)
+                .status(HttpStatus.OK)
+                .errorResponsev2(Error.OK, "로그아웃 성공")
+                .build();
+    }
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        log.info("bearerToken {}", bearerToken);
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            // "Bearer " 제거 + trim으로 공백 제거
+            return bearerToken.substring(7).trim();
+        }
+        return null; // 없거나 형식 이상
     }
 }

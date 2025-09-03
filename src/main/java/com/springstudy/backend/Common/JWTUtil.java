@@ -21,11 +21,10 @@ import java.util.stream.Collectors;
 // JWT 만들어주는 함수
 @RequiredArgsConstructor
 public class JWTUtil {
-    private final RedisService redisService;
     private static final SecretKey key =
             Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
-    public static JWTToken generateToken(Authentication auth){
+    public static JWTToken generateToken(Authentication auth, Long userId){
         // 1. 인증된 auth 정보를 받아 해싱함.
         String authorities = auth.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -34,7 +33,7 @@ public class JWTUtil {
         long now = (new Date()).getTime();
 
         String accessToken = Jwts.builder()
-                .setSubject(auth.getName())
+                .setSubject(userId.toString())
                 .claim("authorities", authorities)
                 .expiration(new Date(now + 60 * 60 * 1000))
                 .signWith(SignatureAlgorithm.HS512, key)
@@ -53,7 +52,7 @@ public class JWTUtil {
                 .build();
     }
 
-    public boolean validateToken(String token){
+    public static boolean validateToken(String token){
         try{
             Jwts.parser().setSigningKey(key).build().parseClaimsJws(token);
             return true;
@@ -70,6 +69,12 @@ public class JWTUtil {
 
         }
         return false;
+    }
+
+    public static Long getUserId(String token){
+        Claims claims = Jwts.parser().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        Long userId =Long.parseLong(claims.getSubject());
+        return userId;
     }
 
 //    public static String createToken(Authentication auth) {

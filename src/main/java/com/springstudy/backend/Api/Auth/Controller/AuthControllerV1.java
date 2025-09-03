@@ -64,4 +64,9 @@ public class AuthControllerV1 {
     public ResponseEntity<Response<String>> checkEmail(@RequestBody @Valid EmailVerifyRequest emailRequest) {
         return emailService.CheckAuthNum(emailRequest);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Response<Boolean>> logout(HttpServletRequest request) {
+        return authService.logout(request);
+    }
 }
