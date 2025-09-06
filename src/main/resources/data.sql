@@ -35,7 +35,7 @@ INSERT INTO items (img_title, title, item_category, points) VALUES
                                                                 ('fitness1.jpg', 'Fitness Item 1', 'FITNESS', 695),
                                                                 ('fitness2.jpg', 'Fitness Item 2', 'FITNESS', 230),
                                                                 ('fitness3.jpg', 'Fitness Item 3', 'FITNESS', 948),
-                                                                ('fitness4.jpg', 'Fitness Item 4', 'FITNESS', 584),
+                                                                 ('fitness4.jpg', 'Fitness Item 4', 'FITNESS', 584),
                                                                 ('fitness5.jpg', 'Fitness Item 5', 'FITNESS', 312);
 
 -- FOOD 카테고리

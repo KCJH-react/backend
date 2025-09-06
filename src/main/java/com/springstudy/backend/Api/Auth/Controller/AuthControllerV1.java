@@ -23,7 +23,7 @@ public class AuthControllerV1 {
     private final AuthService authService;
     public final EmailService emailService;
 
-    @GetMapping("/user")
+    @GetMapping("")
     public ResponseEntity<Response<UserDTO>> get(@RequestParam Long userId) {
         return authService.get(userId);
     }

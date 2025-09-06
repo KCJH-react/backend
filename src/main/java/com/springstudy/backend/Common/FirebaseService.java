@@ -4,6 +4,7 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.firebase.cloud.StorageClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class FirebaseService {
 
     @Value("${firebase.bucketName}")
@@ -21,12 +23,11 @@ public class FirebaseService {
     public String getFileUrl(String fileName) {
         Bucket bucket = StorageClient.getInstance().bucket();
         Blob blob = bucket.get(fileName);
-
         if (blob == null) return null;
 
         // 1시간 동안 유효한 URL 생성
         URL url = blob.signUrl(1, TimeUnit.HOURS, Storage.SignUrlOption.withV4Signature());
-
+        log.error("이미지 url: {}", url);
         return url.toString();
     }
 
