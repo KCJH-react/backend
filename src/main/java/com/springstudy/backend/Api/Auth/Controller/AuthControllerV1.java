@@ -1,19 +1,23 @@
 package com.springstudy.backend.Api.Auth.Controller;
-
 import com.springstudy.backend.Api.Auth.Model.Request.*;
 import com.springstudy.backend.Api.Auth.Model.UserDTO;
 import com.springstudy.backend.Api.Auth.Service.AuthService;
 import com.springstudy.backend.Api.Auth.Service.EmailService;
 import com.springstudy.backend.Api.Repository.Entity.User;
+import com.springstudy.backend.Api.Repository.Entity.UserCategory;
+import com.springstudy.backend.Common.Type.Challenge;
 import com.springstudy.backend.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/user")
@@ -26,6 +30,10 @@ public class AuthControllerV1 {
     @GetMapping("")
     public ResponseEntity<Response<UserDTO>> get(@RequestParam Long userId) {
         return authService.get(userId);
+    }
+    @DeleteMapping("")
+    public ResponseEntity<Response<UserDTO>> delete(@RequestParam Long userId) {
+        return authService.delete(userId);
     }
 
     @PostMapping("/signup")
@@ -45,7 +53,6 @@ public class AuthControllerV1 {
 
     @PutMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Response<String>> profileUpdate(
-            @RequestPart String password,
             @RequestPart MultipartFile profileImg,
             @PathVariable Long id){
         return authService.updateProfile(profileImg, id);
@@ -63,5 +70,16 @@ public class AuthControllerV1 {
     @PostMapping("/check")
     public ResponseEntity<Response<String>> checkEmail(@RequestBody @Valid EmailVerifyRequest emailRequest) {
         return emailService.CheckAuthNum(emailRequest);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Response<Boolean>> logout(HttpServletRequest request) {
+        return authService.logout(request);
+    }
+
+
+    @GetMapping("/category/{id}")
+    public ResponseEntity<Response<List<UserCategory>>> getCategory(@PathVariable Long id) {
+        return authService.getCategory(id);
     }
 }

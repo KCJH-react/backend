@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "preferred_challenges")
+@Table(name = "user_categories")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

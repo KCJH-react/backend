@@ -9,8 +9,7 @@ import com.springstudy.backend.Api.Repository.Entity.UserCredential;
 import com.springstudy.backend.Api.Repository.Entity.User_UserCategory;
 import com.springstudy.backend.Api.Repository.UserCategoryRepository;
 import com.springstudy.backend.Api.Repository.UserRepository;
-import com.springstudy.backend.Api.Repository.User_UserCategoryRepository;
-import com.springstudy.backend.Common.FirebaseService;
+import com.springstudy.backend.Common.*;
 import com.springstudy.backend.Common.Hash.Hasher;
 import com.springstudy.backend.Common.JWTToken;
 import com.springstudy.backend.Common.JWTUtil;
@@ -22,6 +21,7 @@ import com.springstudy.backend.Error;
 import com.springstudy.backend.ErrorResponsev2;
 import com.springstudy.backend.Response;
 import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -119,6 +119,7 @@ public class AuthService {
         Response<User> signin_response = new Response<>(null, null);
 
         Optional<User> userOptional = userRepository.findByEmail(request.email().trim().toLowerCase());
+
         System.out.println("email: "+request.email()+"user: "+userOptional.isPresent());
         if(userOptional.isEmpty()) {
             return ResponseBuilder.<User>create()
@@ -130,7 +131,7 @@ public class AuthService {
         try{
             User user = userOptional.get();
             Authentication auth = authUser(user.getUsername(),request.password());
-            JWTToken jwtToken = JWTUtil.generateToken(auth);
+            JWTToken jwtToken = JWTUtil.generateToken(auth, user.getId());
             log.info("login 성공 {}"+user.getEmail());
             user.setUserCredential(null);
             signin_response.setData(user);
@@ -341,5 +342,18 @@ public class AuthService {
                 .status(HttpStatus.OK)
                 .errorResponsev2(Error.OK, "유저 정보 조회 성공")
                 .data(userDTO).build();
+    }
+
+    public ResponseEntity<Response<UserDTO>> delete(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isEmpty()) {
+            //예외처리
+        }
+        userRepository.deleteById(userId);
+        return ResponseBuilder.<UserDTO>create()
+                .status(HttpStatus.OK)
+                .data(null)
+                .errorResponsev2(Error.OK, "회원삭제 완료")
+                .build();
     }
 }
