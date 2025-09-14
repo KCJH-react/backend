@@ -25,20 +25,42 @@ public class ItemOrder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="user_id", nullable=false)
-    private Long userId;           // users.id (zip의 UserRepository 사용)
+    // ✅ JPA 연관관계 매핑
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_item_orders_user"))
+    private User user;
 
-    @Column(name="item_id", nullable=false)
-    private Long itemId;           // items.id (zip의 Item.id = Long)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "item_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_item_orders_item"))
+    private Item item;
 
-    @Column(nullable=false)
+    @Column(nullable = false)
     private Integer quantity;
 
-    @Column(name="use_code", length=32, nullable=false, unique=true)
+    @Column(name = "status", length = 20, nullable = false)
+    private String status;   // 주문 상태 (예: CREATED, USED 등)
+
+    @Column(name = "use_code", length = 32, nullable = false, unique = true)
     private String useCode;
 
-    @Column(name="created_at", nullable=false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    void prePersist() {
+        if (createdAt == null) createdAt = LocalDateTime.now();
+        if (useCode == null) {
+            useCode = UUID.randomUUID().toString()
+                    .replace("-", "")
+                    .substring(0, 16)
+                    .toUpperCase();
+        }
+        if (quantity == null || quantity < 1) quantity = 1;
+        if (status == null) status = "CREATED";
+    }
+}
 
 //    public enum Status { CREATED, COMPLETED, CANCELED, USED, REFUNDED }
 
@@ -49,4 +71,4 @@ public class ItemOrder {
 //        if (useCode == null) useCode = UUID.randomUUID().toString().replace("-", "").substring(0,16).toUpperCase();
 //        if (quantity == null || quantity < 1) quantity = 1;
 //    }
-}
+
