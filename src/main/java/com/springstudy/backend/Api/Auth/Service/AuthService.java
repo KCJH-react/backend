@@ -324,6 +324,7 @@ public class AuthService {
         for(User_UserCategory challenge:
                 user.getUser_userCategoryList()){
             Optional<UserCategory> userCategoryOptional = userCategoryRepository.findById(challenge.getUserCategory().getId());
+            log.info(userCategoryOptional.get().getChallenge().toString());
             if(userCategoryOptional.isPresent()){
                 //예외처리
             }
