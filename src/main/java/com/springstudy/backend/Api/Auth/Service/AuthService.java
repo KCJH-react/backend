@@ -49,6 +49,7 @@ public class AuthService {
     private final UserCategoryRepository userCategoryRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final FirebaseService firebaseService;
+    private final RedisService redisService;
 
     public ResponseEntity<Response<User>> signup(CreateUserRequest request) {
         // 1. 동일 이메일 있나 확인.
@@ -355,5 +356,34 @@ public class AuthService {
                 .data(null)
                 .errorResponsev2(Error.OK, "회원삭제 완료")
                 .build();
+    }
+
+    public ResponseEntity<Response<Boolean>> logout(HttpServletRequest request) {
+        String token = resolveToken(request);
+
+        if(token == null || !JWTUtil.validateToken(token)){
+            return ResponseBuilder.<Boolean>create()
+                    .data(null)
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .errorResponsev2(Error.UNAUTHORIZED, "유효하지 않는 토큰입니다.")
+                    .build();
+        }
+        Long userId = JWTUtil.getUserId(token);
+        boolean result = redisService.deleteData(userId.toString());
+
+        return ResponseBuilder.<Boolean>create()
+                .data(result)
+                .status(HttpStatus.OK)
+                .errorResponsev2(Error.OK, "로그아웃 성공")
+                .build();
+    }
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        log.info("bearerToken {}", bearerToken);
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            // "Bearer " 제거 + trim으로 공백 제거
+            return bearerToken.substring(7).trim();
+        }
+        return null; // 없거나 형식 이상
     }
 }
