@@ -9,8 +9,7 @@ import com.springstudy.backend.Api.Repository.Entity.UserCredential;
 import com.springstudy.backend.Api.Repository.Entity.User_UserCategory;
 import com.springstudy.backend.Api.Repository.UserCategoryRepository;
 import com.springstudy.backend.Api.Repository.UserRepository;
-import com.springstudy.backend.Api.Repository.User_UserCategoryRepository;
-import com.springstudy.backend.Common.FirebaseService;
+import com.springstudy.backend.Common.*;
 import com.springstudy.backend.Common.Hash.Hasher;
 import com.springstudy.backend.Common.JWTToken;
 import com.springstudy.backend.Common.JWTUtil;
@@ -22,6 +21,7 @@ import com.springstudy.backend.Error;
 import com.springstudy.backend.ErrorResponsev2;
 import com.springstudy.backend.Response;
 import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -131,7 +131,7 @@ public class AuthService {
         try{
             User user = userOptional.get();
             Authentication auth = authUser(user.getUsername(),request.password());
-            JWTToken jwtToken = JWTUtil.generateToken(auth);
+            JWTToken jwtToken = JWTUtil.generateToken(auth, user.getId());
             log.info("login 성공 {}"+user.getEmail());
             user.setUserCredential(null);
             signin_response.setData(user);
@@ -293,7 +293,6 @@ public class AuthService {
                     return true;
                 }catch(Exception e){return false;}
             case GOAL: return true;
-            case PROFILE: return true;
         }
         return false;
     }
@@ -305,7 +304,6 @@ public class AuthService {
             case SEX: user.setSex(Sex.valueOf(content)); break;
             case BIRTHDAY: user.setBirthday(content); break;
             case GOAL: user.setGoal(content); break;
-            case PROFILE: user.setImgUrl(content); break;
         }
         return userRepository.save(user);
     }
@@ -324,7 +322,6 @@ public class AuthService {
         for(User_UserCategory challenge:
                 user.getUser_userCategoryList()){
             Optional<UserCategory> userCategoryOptional = userCategoryRepository.findById(challenge.getUserCategory().getId());
-            log.info(userCategoryOptional.get().getChallenge().toString());
             if(userCategoryOptional.isPresent()){
                 //예외처리
             }

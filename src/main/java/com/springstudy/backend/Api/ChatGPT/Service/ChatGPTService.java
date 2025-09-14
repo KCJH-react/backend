@@ -8,6 +8,7 @@ import com.springstudy.backend.Api.ChatGPT.Model.ChatMessage;
 import com.springstudy.backend.Api.Repository.ChallengeRepository;
 import com.springstudy.backend.Api.Repository.Entity.Challenge;
 import com.springstudy.backend.Api.Repository.Entity.User;
+import com.springstudy.backend.Api.Repository.User_UserCategoryRepository;
 import com.springstudy.backend.Common.ResponseBuilder;
 import com.springstudy.backend.ErrorResponsev2;
 import com.springstudy.backend.Response;
@@ -30,14 +31,16 @@ public class ChatGPTService {
     private final String OPENAI_MODEL;
 
     private final ChallengeRepository challengeRepository;
+    private final User_UserCategoryRepository userUserCategoryRepository;
 
     public Challenge saveChallenge(ChallengeResponse response, Long userId) {
         Challenge challenge = response.toEntity(userId);
         return challengeRepository.save(challenge);
     }
 
-    public ChatGPTService(ChallengeRepository challengeRepository) {
+    public ChatGPTService(ChallengeRepository challengeRepository, User_UserCategoryRepository userUserCategoryRepository) {
         this.challengeRepository = challengeRepository;
+        this.userUserCategoryRepository = userUserCategoryRepository;
         Dotenv dotenv = Dotenv.load();
         this.OPENAI_API_KEY = dotenv.get("GPT");
         this.OPENAI_MODEL = dotenv.get("MODEL");
@@ -115,6 +118,5 @@ public class ChatGPTService {
                     .build();
         }
     }
-
 
 }

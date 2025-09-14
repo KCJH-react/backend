@@ -1,69 +1,85 @@
 package com.springstudy.backend.Api.Ranking.Service;
 
+import com.springstudy.backend.Api.Auth.Model.AuthUser;
 import com.springstudy.backend.Api.Ranking.Model.Request.SubmitScoreRequest;
 import com.springstudy.backend.Api.Ranking.Model.Response.RankingResponse;
 import com.springstudy.backend.Api.Ranking.Model.Response.SubmitScoreResponse;
 import com.springstudy.backend.Api.Repository.Entity.Ranking;
 import com.springstudy.backend.Api.Repository.RankingRepository;
 import com.springstudy.backend.Common.ErrorCode.ErrorCode;
-import com.springstudy.backend.Api.Auth.Model.AuthUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class RankingService {
+
     private final RankingRepository rankingRepository;
 
-    public SubmitScoreResponse submitScore(SubmitScoreRequest request) {
-        try {
-            String userid = getCurrentUserId();
-            if (userid == null || userid.isBlank()) {
-                return new SubmitScoreResponse(ErrorCode.FAILURE);
-            }
+    // 점수 제출: 인증 사용자 기준으로 저장/갱신
+    public SubmitScoreResponse submitScore(SubmitScoreRequest req) {
+        String username = getCurrentUsername();
 
-            // ✅ 기존 데이터가 있으면 업데이트, 없으면 생성
-            Ranking ranking = rankingRepository.findByUserid(userid)
-                    .orElse(new Ranking(userid, "기본", 0));
+        Ranking r = rankingRepository
+                .findByUseridAndRankType(username, req.rankType())
+                .orElseGet(() -> Ranking.builder()
+                        .userid(username)
+                        .rankType(req.rankType())
+                        .score(0)
+                        .point(0L)
+                        .successCount(0L)
+                        .updatedAt(System.currentTimeMillis())
+                        .build());
 
-            ranking.setScore(ranking.getScore() + request.score()); // ✅ 점수 누적
-            rankingRepository.save(ranking);
-
-            return new SubmitScoreResponse(ErrorCode.SUCCESS);
-        } catch (Exception e) {
-            return new SubmitScoreResponse(ErrorCode.FAILURE);
+        // 비즈니스 규칙: 최고점 갱신 or 누적 포인트 업데이트 등
+        // 여기서는 "점수는 최고점으로 유지, 포인트는 누적" 예시
+        int newScore = req.score() != null ? req.score() : 0;
+        if (r.getScore() == null || newScore > r.getScore()) {
+            r.setScore(newScore);
         }
+        r.setPoint((r.getPoint() == null ? 0L : r.getPoint()) + newScore);
+        r.setUpdatedAt(System.currentTimeMillis());
+
+        rankingRepository.save(r);
+        return new SubmitScoreResponse(ErrorCode.SUCCESS);
     }
 
-    public RankingResponse getTopRanks() {
-        List<RankingResponse.RankingData> rankings =
-                Optional.ofNullable(rankingRepository.findTop10ByOrderByScoreDesc())
-                        .orElse(List.of())
-                        .stream()
-                        .map(ranking -> new RankingResponse.RankingData(ranking.getUserid(), ranking.getScore()))
-                        .collect(Collectors.toList());
-
-        return new RankingResponse(ErrorCode.SUCCESS, rankings);
+    // 타입별 Top10 조회
+    public RankingResponse getTopRanks(String rankType) {
+        List<Ranking> topList = rankingRepository.findTop10ByRankTypeOrderByScoreDesc(rankType);
+        List<RankingResponse.RankingData> data = topList.stream()
+                .map(r -> new RankingResponse.RankingData(r.getUserid(), r.getScore()))
+                .toList();
+        return new RankingResponse(ErrorCode.SUCCESS, data);
     }
 
-    private String getCurrentUserId() {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
+    // 내 랭킹(선택): 필요 시 컨트롤러에 엔드포인트 추가해서 사용
+    public RankingResponse getMyRank(String rankType) {
+        String username = getCurrentUsername();
+        Ranking r = rankingRepository
+                .findByUseridAndRankType(username, rankType)
+                .orElse(null);
 
+        List<RankingResponse.RankingData> data = (r == null)
+                ? List.of()
+                : List.of(new RankingResponse.RankingData(r.getUserid(), r.getScore()));
+        return new RankingResponse(ErrorCode.SUCCESS, data);
+    }
+
+    private String getCurrentUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new RuntimeException("로그인되지 않은 사용자입니다.");
         }
-
         Object principal = authentication.getPrincipal();
         if (principal instanceof AuthUser authUser) {
-            //return authUser.getUserId();
-            return "id";
-        } else {
-            throw new RuntimeException("유효하지 않은 사용자 정보입니다.");
+            return authUser.getUsername();
         }
+        // 다른 Principal 타입을 쓰는 경우 대비
+        return authentication.getName();
     }
 }

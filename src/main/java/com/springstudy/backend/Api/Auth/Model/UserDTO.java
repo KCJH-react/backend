@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -24,6 +25,14 @@ public class UserDTO {
     private int points;
     private String goal;
     private List<Challenge> category;
+
+    public int getAge() {
+        if (this.birthday == null) return 0;
+        LocalDate birthDate = LocalDate.parse(this.birthday);
+        LocalDate today = LocalDate.now();
+        return today.getYear() - birthDate.getYear()
+                - ((today.getDayOfYear() < birthDate.getDayOfYear()) ? 1 : 0);
+    }
 }
 
 //    @Id
