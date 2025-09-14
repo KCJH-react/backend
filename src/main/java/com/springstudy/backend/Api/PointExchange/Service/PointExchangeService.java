@@ -144,8 +144,8 @@ public class PointExchangeService {
         user.setPoints(balance);
 
         ItemOrder order = ItemOrder.builder()
-                .userId(id)
-                .itemId(itemId)
+                .user(user)
+                .item(item)
                 .quantity(quantity)
                 .createdAt(LocalDateTime.now())
                 .useCode(UUID.randomUUID().toString().replace("-", "").substring(0,16).toUpperCase())
@@ -177,7 +177,7 @@ public class PointExchangeService {
         }
         List<ItemOrderDTO> itemOrderDTOList = new ArrayList<>();
         for(ItemOrder itemOrder : itemOrders){
-            String itemTitle = itemRepository.findById(itemOrder.getItemId()).get().getTitle();
+            String itemTitle = itemOrder.getItem().getTitle();
             ItemOrderDTO itemOrderDTO = ItemOrderDTO.builder()
                     .useCode(itemOrder.getUseCode())
                     .createdAt(itemOrder.getCreatedAt())
