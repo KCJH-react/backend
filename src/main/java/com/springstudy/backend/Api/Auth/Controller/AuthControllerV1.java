@@ -1,19 +1,23 @@
 package com.springstudy.backend.Api.Auth.Controller;
-
 import com.springstudy.backend.Api.Auth.Model.Request.*;
 import com.springstudy.backend.Api.Auth.Model.UserDTO;
 import com.springstudy.backend.Api.Auth.Service.AuthService;
 import com.springstudy.backend.Api.Auth.Service.EmailService;
 import com.springstudy.backend.Api.Repository.Entity.User;
+import com.springstudy.backend.Api.Repository.Entity.UserCategory;
+import com.springstudy.backend.Common.Type.Challenge;
 import com.springstudy.backend.Response;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/user")
@@ -68,5 +72,11 @@ public class AuthControllerV1 {
     @PostMapping("/logout")
     public ResponseEntity<Response<Boolean>> logout(HttpServletRequest request) {
         return authService.logout(request);
+    }
+
+
+    @GetMapping("/category/{id}")
+    public ResponseEntity<Response<List<UserCategory>>> getCategory(@PathVariable Long id) {
+        return authService.getCategory(id);
     }
 }

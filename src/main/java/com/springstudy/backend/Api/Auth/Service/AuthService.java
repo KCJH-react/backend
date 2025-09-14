@@ -9,7 +9,6 @@ import com.springstudy.backend.Api.Repository.Entity.UserCredential;
 import com.springstudy.backend.Api.Repository.Entity.User_UserCategory;
 import com.springstudy.backend.Api.Repository.UserCategoryRepository;
 import com.springstudy.backend.Api.Repository.UserRepository;
-import com.springstudy.backend.Api.Repository.User_UserCategoryRepository;
 import com.springstudy.backend.Common.*;
 import com.springstudy.backend.Common.Hash.Hasher;
 import com.springstudy.backend.Common.Type.Challenge;
@@ -371,4 +370,24 @@ public class AuthService {
         }
         return null; // 없거나 형식 이상
     }
+
+    public ResponseEntity<Response<List<UserCategory>>> getCategory(Long id){
+        Optional<User> userOptional = userRepository.findById(id);
+        if(userOptional.isEmpty()) {
+            //예외처리
+        }
+        User user = userOptional.get();
+        List<UserCategory> userCategories = new ArrayList<>();
+        if(!user.getUser_userCategoryList().isEmpty()){
+            for( User_UserCategory user_userCategory : user.getUser_userCategoryList()){
+                userCategories.add(user_userCategory.getUserCategory());
+            }
+        }
+        return ResponseBuilder.<List<UserCategory>>create()
+                .status(HttpStatus.OK)
+                .errorResponsev2(Error.OK, "카테고리 반환 완료")
+                .data(userCategories)
+                .build();
+    }
+
 }
