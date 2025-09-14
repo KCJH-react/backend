@@ -2,6 +2,7 @@ package com.springstudy.backend.Api.Repository.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.springstudy.backend.Common.Type.Challenge;
 import com.springstudy.backend.Common.Type.Sex;
 import jakarta.persistence.*;
@@ -52,6 +53,7 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_credential_id", referencedColumnName = "id", nullable = false, unique = true
     )
+    @JsonIgnore
     private UserCredential user_credential;
 
     public void setUserCredential(UserCredential user_credential) {
@@ -67,4 +69,7 @@ public class User {
         return today.getYear() - birthDate.getYear() -
                 ((today.getDayOfYear() < birthDate.getDayOfYear()) ? 1 : 0);
     }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<User_Challenge> userChallenges = new ArrayList<>();
 }

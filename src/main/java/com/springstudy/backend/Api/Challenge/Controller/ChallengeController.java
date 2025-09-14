@@ -1,7 +1,10 @@
 package com.springstudy.backend.Api.Challenge.Controller;
 
+import com.springstudy.backend.Api.Challenge.Model.Response.ChallengeResponse;
 import com.springstudy.backend.Api.Challenge.Service.ChallengeService;
 import com.springstudy.backend.Api.Repository.Entity.Challenge;
+import com.springstudy.backend.Api.Repository.Entity.PersonalChallenge;
+import com.springstudy.backend.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,5 +45,17 @@ public class ChallengeController {
     public ResponseEntity<List<Challenge>> getSuccessChallenges(@RequestParam Long userId) {
         List<Challenge> challenges = challengeService.getSuccessChallenges(userId);
         return ResponseEntity.ok(challenges);
+    }
+
+    @PostMapping("/personalChallenge/saveChallenge")
+    public ResponseEntity<Response<PersonalChallenge>> savePersonalChallenge(
+            @RequestParam Long userId,
+            @RequestParam String personalName,
+            @RequestParam String personalCompletionAction,
+            @RequestParam Long personalDuration,
+            @RequestParam String personalIcon,
+            @RequestParam String personalCategory
+    ) {
+        return challengeService.savePersonalChallengeResult(userId, personalName, personalCompletionAction, personalDuration, personalIcon, personalCategory);
     }
 }
