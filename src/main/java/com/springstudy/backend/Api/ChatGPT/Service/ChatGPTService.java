@@ -80,7 +80,7 @@ public class ChatGPTService {
                 });
     }
 
-    //Response 타입으로 만들기
+    //ResponseV3 타입으로 만들기
     public ResponseEntity<Response<GPTChallengeResponse>> makeChallengeResult(String systemPrompt, String userPrompt, Long userId) {
         try {
             ChallengeResponse challengeResponse = makeChallengeGPT(systemPrompt, userPrompt).block();

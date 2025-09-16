@@ -2,7 +2,7 @@
 //package com.springstudy.backend.Api.Gemini.Service;
 //
 //import com.springstudy.backend.Api.Gemini.Model.Request.GeminiReqDto;
-//import com.springstudy.backend.Api.Gemini.Model.Response.GeminiResDto;
+//import com.springstudy.backend.Api.Gemini.Model.ResponseV3.GeminiResDto;
 //import com.springstudy.backend.Api.Repoitory.ChallengeRepository;
 //import com.springstudy.backend.Api.Repoitory.Entity.Challenge;
 //import com.springstudy.backend.Common.ErrorCode.CustomException;
