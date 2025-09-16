@@ -1,4 +1,4 @@
-package com.springstudy.backend;
+package com.springstudy.backend.Common.Responsev2;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,22 +1,19 @@
 package com.springstudy.backend.Api.Challenge.Service;
 
-import com.springstudy.backend.Api.Challenge.Model.Response.ChallengeResponse;
-import com.springstudy.backend.Api.Challenge.Model.Response.PersonalChallengeResponse;
 import com.springstudy.backend.Api.Repository.ChallengeRepository;
 import com.springstudy.backend.Api.Repository.Entity.*;
 import com.springstudy.backend.Api.Repository.PersonalChallengeRepository;
 import com.springstudy.backend.Api.Repository.PrivateChallengeRepository;
 import com.springstudy.backend.Api.Repository.UserRepository;
 import com.springstudy.backend.Common.ResponseBuilder;
-import com.springstudy.backend.ErrorResponsev2;
-import com.springstudy.backend.Response;
+import com.springstudy.backend.Common.Responsev2.Error;
+import com.springstudy.backend.Common.Responsev2.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ChallengeService {
@@ -113,7 +110,7 @@ public class ChallengeService {
             return ResponseBuilder.<PersonalChallenge>create()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .data(null)
-                    .errorResponsev2(com.springstudy.backend.Error.DATABASE_ERROR, "개인 챌린지 저장중 에러발생")
+                    .errorResponsev2(Error.DATABASE_ERROR, "개인 챌린지 저장중 에러발생")
                     .build();
         }
     }

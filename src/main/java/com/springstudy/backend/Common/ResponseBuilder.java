@@ -1,8 +1,8 @@
 package com.springstudy.backend.Common;
 
-import com.springstudy.backend.Error;
-import com.springstudy.backend.ErrorResponsev2;
-import com.springstudy.backend.Response;
+import com.springstudy.backend.Common.Responsev2.Error;
+import com.springstudy.backend.Common.Responsev2.ErrorResponsev2;
+import com.springstudy.backend.Common.Responsev2.Response;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

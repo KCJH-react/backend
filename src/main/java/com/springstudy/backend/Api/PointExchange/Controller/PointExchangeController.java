@@ -5,7 +5,7 @@ import com.springstudy.backend.Api.PointExchange.Model.Response.ItemDTO;
 import com.springstudy.backend.Api.PointExchange.Model.Response.ItemOrderDTO;
 import com.springstudy.backend.Api.PointExchange.Model.Response.PointExchangeResponse;
 import com.springstudy.backend.Api.PointExchange.Service.PointExchangeService;
-import com.springstudy.backend.Response;
+import com.springstudy.backend.Common.Responsev2.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
