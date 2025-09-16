@@ -28,6 +28,7 @@ public class ChallengeResponse {
     @JsonAlias({"추천이유"})
     private String reason;
 
+
     public Challenge toEntity(Long userId) {
         return new Challenge(
                 null,
@@ -36,7 +37,7 @@ public class ChallengeResponse {
                 this.reason,
                 this.content,
                 userId,
-                true //일시적으로 true 세팅
+                true //일시적으로 false 세팅
         );
     }
 

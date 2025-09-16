@@ -31,7 +31,6 @@ public class ChatGPTController {
         this.authService = authService;
     }
 
-    //성공률 계산 만들어야함
     @GetMapping("/challenge")
     public ResponseEntity<Response<GPTChallengeResponse>> getChallenge(
             @RequestParam Long userid

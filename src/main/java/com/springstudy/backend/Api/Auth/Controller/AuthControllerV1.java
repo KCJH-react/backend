@@ -78,8 +78,8 @@ public class AuthControllerV1 {
     }
 
 
-    @GetMapping("/category/{id}")
-    public ResponseEntity<Response<List<UserCategory>>> getCategory(@PathVariable Long id) {
-        return authService.getCategory(id);
-    }
+//    @GetMapping("/category/{id}")
+//    public ResponseEntity<Response<List<UserCategory>>> getCategory(@PathVariable Long id) {
+//        return authService.getCategory(id);
+//    }
 }

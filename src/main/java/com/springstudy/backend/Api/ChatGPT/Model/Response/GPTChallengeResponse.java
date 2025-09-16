@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,6 +26,11 @@ public class GPTChallengeResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
+    private Boolean success;
+
+    private String username;
+    private List<com.springstudy.backend.Common.Type.Challenge> category;
+
     public static GPTChallengeResponse fromEntity(Challenge challenge) {
         if (challenge == null) {
             return null;
@@ -35,6 +41,7 @@ public class GPTChallengeResponse {
                 .duration(challenge.getDuration())
                 .reason(challenge.getReason())
                 .createdAt(challenge.getCreatedAt())
+                .success(challenge.getSuccess())
                 .build();
     }
 
