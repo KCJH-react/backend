@@ -1,4 +1,4 @@
-package com.springstudy.backend;
+package com.springstudy.backend.Common.Responsev2;
 
 public enum Error {
     BAD_REQUEST,            // 400
