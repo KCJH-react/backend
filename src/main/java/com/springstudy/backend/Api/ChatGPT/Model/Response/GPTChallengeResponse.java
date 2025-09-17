@@ -18,6 +18,7 @@ import java.util.List;
 @Builder
 public class GPTChallengeResponse {
 
+    private Long id;
     private String content;
     private String difficult;
     private int duration;

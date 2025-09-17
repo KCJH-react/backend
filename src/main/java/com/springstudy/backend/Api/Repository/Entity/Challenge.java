@@ -27,5 +27,5 @@ public class Challenge extends BaseTimeEntity {
 
     private Long userid;
 
-    private Boolean success = true;
+    private Boolean success = false;
 }

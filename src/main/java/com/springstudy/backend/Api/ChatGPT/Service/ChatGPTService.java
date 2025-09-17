@@ -128,6 +128,7 @@ public class ChatGPTService {
             Challenge savedChallenge = saveChallenge(challengeResponse, userId);
             GPTChallengeResponse combinedResponse = GPTChallengeResponse.builder()
                     // Challenge 정보
+                    .id(savedChallenge.getId())
                     .content(savedChallenge.getContent())
                     .difficult(savedChallenge.getDifficulty())
                     .duration(savedChallenge.getDuration())
@@ -185,6 +186,7 @@ public class ChatGPTService {
 //                GPTChallengeResponse response = GPTChallengeResponse.fromEntity(challengeEntity);
                 GPTChallengeResponse combinedResponse = GPTChallengeResponse.builder()
                         // Challenge 정보
+                        .id(challengeEntity.getId())
                         .content(challengeEntity.getContent())
                         .difficult(challengeEntity.getDifficulty())
                         .duration(challengeEntity.getDuration())

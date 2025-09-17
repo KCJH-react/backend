@@ -41,7 +41,7 @@ public class ChallengeService {
     public boolean completeChallenge(Long userid, Long challengeId) {
         try {
             // 사용자 데이터 조회
-            var user = userRepository.findById(userid).orElse(null);
+            User user = userRepository.findById(userid).orElse(null);
             if (user == null) {
                 return false;
             }
@@ -51,6 +51,29 @@ public class ChallengeService {
             if (challenge == null) {
                 return false;
             }
+            int pointsToAdd = 0;
+            String difficulty = challenge.getDifficulty();
+
+            switch (difficulty) {
+                case "쉬움":
+                    pointsToAdd = 50;
+                    break;
+                case "중간":
+                    pointsToAdd = 100;
+                    break;
+                case "어려움":
+                    pointsToAdd = 150;
+                    break;
+                default:
+                    pointsToAdd = 0;
+                    break;
+            }
+
+            int currentPoints = user.getPoints();
+            user.setPoints(currentPoints + pointsToAdd);
+
+            challenge.setSuccess(true);
+            challengeRepository.save(challenge);
 
             // 사용자 정보 업데이트
             userRepository.save(user);
