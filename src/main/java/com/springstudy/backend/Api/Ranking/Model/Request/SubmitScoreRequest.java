@@ -10,6 +10,10 @@ public record SubmitScoreRequest (
         @Schema(description = "획득한 점수")
         Integer score,
 
+        @NotNull
+        @Schema(description = "성공횟수")
+        Integer success_count,
+
         @NotBlank
         @Schema(description = "랭크 타입 (예: TOTAL, WEEKLY)")
         String rankType

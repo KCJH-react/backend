@@ -20,6 +20,9 @@ public record RankingResponse (
             String userid,
 
             @Schema(description = "획득한 점수")
-            Integer score
+            Integer score,
+
+            @Schema(description = "챌린지 클리어 횟수")
+            Long successCount
     ) {}
 }

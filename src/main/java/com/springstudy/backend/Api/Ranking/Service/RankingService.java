@@ -52,7 +52,11 @@ public class RankingService {
     public RankingResponse getTopRanks(String rankType) {
         List<Ranking> topList = rankingRepository.findTop10ByRankTypeOrderByScoreDesc(rankType);
         List<RankingResponse.RankingData> data = topList.stream()
-                .map(r -> new RankingResponse.RankingData(r.getUserid(), r.getScore()))
+                .map(r -> new RankingResponse.RankingData(
+                        r.getUserid(),
+                        r.getScore(),
+                        r.getSuccessCount() == null ? 0L : r.getSuccessCount()  // ✅ successCount 매핑 추가
+                ))
                 .toList();
         return new RankingResponse(ErrorCode.SUCCESS, data);
     }
@@ -66,7 +70,7 @@ public class RankingService {
 
         List<RankingResponse.RankingData> data = (r == null)
                 ? List.of()
-                : List.of(new RankingResponse.RankingData(r.getUserid(), r.getScore()));
+                : List.of(new RankingResponse.RankingData(r.getUserid(), r.getScore(),r.getSuccessCount() == null ? 0L : r.getSuccessCount()));
         return new RankingResponse(ErrorCode.SUCCESS, data);
     }
 
