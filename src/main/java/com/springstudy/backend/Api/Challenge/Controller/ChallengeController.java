@@ -1,15 +1,18 @@
 package com.springstudy.backend.Api.Challenge.Controller;
 
+import com.springstudy.backend.Api.Challenge.Model.Request.CompleteChallengeRequest;
 import com.springstudy.backend.Api.Challenge.Model.Response.ChallengeResponse;
 import com.springstudy.backend.Api.Challenge.Service.ChallengeService;
 import com.springstudy.backend.Api.Repository.Entity.Challenge;
 import com.springstudy.backend.Api.Repository.Entity.PersonalChallenge;
+import com.springstudy.backend.Common.ResponseBuilder;
 import com.springstudy.backend.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,17 +31,24 @@ public class ChallengeController {
             @ApiResponse(responseCode = "500", description = "챌린지 완료 실패")
     })
     @PostMapping("/complete")
-    public ResponseEntity<String> completeChallenge(
-            @Parameter(description = "사용자의 ID") @RequestParam("userId") Long userid,
-            @Parameter(description = "완료한 챌린지의 ID") @RequestParam("challengeId") Long challengeId) {
+    public ResponseEntity<Response<Boolean>> completeChallenge(
+            @RequestBody CompleteChallengeRequest request) {
 
         // 챌린지 완료 처리
-        boolean isCompleted = challengeService.completeChallenge(userid, challengeId);
+        boolean isCompleted = challengeService.completeChallenge(request.getUserId(), request.getChallengeId());
 
         if (isCompleted) {
-            return ResponseEntity.ok("챌린지 완료 성공!");
+            return ResponseBuilder.<Boolean>create()
+                    .status(HttpStatus.OK)
+                    .data(true)
+                    .errorResponsev2(null, "챌린지 완료 성공!")
+                    .build();
         } else {
-            return ResponseEntity.status(500).body("챌린지 완료 실패");
+            return ResponseBuilder.<Boolean>create()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .data(false)
+                    .errorResponsev2(null, "챌린지 완료 실패")
+                    .build();
         }
     }
     @GetMapping("/getsuccess")
