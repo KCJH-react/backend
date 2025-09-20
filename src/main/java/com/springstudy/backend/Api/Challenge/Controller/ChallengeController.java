@@ -1,6 +1,7 @@
 package com.springstudy.backend.Api.Challenge.Controller;
 
 import com.springstudy.backend.Api.Challenge.Model.Request.CompleteChallengeRequest;
+import com.springstudy.backend.Api.Challenge.Model.Request.PersonalChallengeSaveRequest;
 import com.springstudy.backend.Api.Challenge.Model.Response.ChallengeResponse;
 import com.springstudy.backend.Api.Challenge.Service.ChallengeService;
 import com.springstudy.backend.Api.Repository.Entity.Challenge;
@@ -59,13 +60,14 @@ public class ChallengeController {
 
     @PostMapping("/personalChallenge/saveChallenge")
     public ResponseEntity<Response<PersonalChallenge>> savePersonalChallenge(
-            @RequestParam Long userId,
-            @RequestParam String personalName,
-            @RequestParam String personalCompletionAction,
-            @RequestParam Long personalDuration,
-            @RequestParam String personalIcon,
-            @RequestParam String personalCategory
+            @RequestBody PersonalChallengeSaveRequest request
     ) {
-        return challengeService.savePersonalChallengeResult(userId, personalName, personalCompletionAction, personalDuration, personalIcon, personalCategory);
+        return challengeService.savePersonalChallengeResult(
+                request.getUserid(),
+                request.getPersonalName(),
+                request.getPersonalCompletionAction(),
+                request.getPersonalDuration(),
+                request.getPersonalCategory()
+        );
     }
 }

@@ -93,7 +93,7 @@ public class ChallengeService {
     //개인 챌린지 저장용
     public PersonalChallenge savePersonalChallenge(
             Long userid, String personalName, String personalCompletionAction,
-            Long personalDuration, String personalIcon, String personalCategory
+            Long personalDuration, String personalCategory
     ) {
         User user = userRepository.findById(userid)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
@@ -102,7 +102,6 @@ public class ChallengeService {
                 .personalName(personalName)
                 .personalCompletionAction(personalCompletionAction)
                 .personalDuration(personalDuration)
-                .personalIcon(personalIcon)
                 .personalCategory(personalCategory)
                 .creatorId(userid)
                 .build();
@@ -120,10 +119,10 @@ public class ChallengeService {
     //개인 챌린지 저장 후 양식에 맞는 response 만들기
     public ResponseEntity<Response<PersonalChallenge>> savePersonalChallengeResult(
             Long userid, String personalName, String personalCompletionAction,
-            Long personalDuration, String personalIcon, String personalCategory
+            Long personalDuration, String personalCategory
     ) {
         try {
-            PersonalChallenge personalChallengeResult = savePersonalChallenge(userid, personalName, personalCompletionAction, personalDuration, personalIcon, personalCategory);
+            PersonalChallenge personalChallengeResult = savePersonalChallenge(userid, personalName, personalCompletionAction, personalDuration, personalCategory);
 
             return ResponseBuilder.<PersonalChallenge>create()
                     .status(HttpStatus.OK)
