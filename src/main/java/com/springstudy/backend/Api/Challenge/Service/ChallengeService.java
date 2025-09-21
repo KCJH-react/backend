@@ -1,6 +1,7 @@
 package com.springstudy.backend.Api.Challenge.Service;
 
 import com.springstudy.backend.Api.Challenge.Model.Response.ChallengeResponse;
+import com.springstudy.backend.Api.Challenge.Model.Response.PersonalChallengeDto;
 import com.springstudy.backend.Api.Challenge.Model.Response.PersonalChallengeResponse;
 import com.springstudy.backend.Api.Repository.ChallengeRepository;
 import com.springstudy.backend.Api.Repository.Entity.*;
@@ -10,6 +11,7 @@ import com.springstudy.backend.Api.Repository.UserRepository;
 import com.springstudy.backend.Common.ResponseBuilder;
 import com.springstudy.backend.ErrorResponsev2;
 import com.springstudy.backend.Response;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ChallengeService {
@@ -137,6 +140,40 @@ public class ChallengeService {
                     .data(null)
                     .errorResponsev2(com.springstudy.backend.Error.DATABASE_ERROR, "개인 챌린지 저장중 에러발생")
                     .build();
+        }
+    }
+
+    public List<PersonalChallengeDto> getAllPersonalChallengesByUserId(Long userId) {
+        List<User_Challenge> userChallenges = userChallengeRepository.findByUserId(userId);
+
+        return userChallenges.stream()
+                .map(User_Challenge::getPersonalChallenge)
+                .map(PersonalChallengeDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<PersonalChallenge> getPersonalChallengeById(Long challengeId) {
+        return personalChallengeRepository.findById(challengeId);
+    }
+
+    //개인챌린지 완료용
+    public Boolean addPointsToUser(Long userid) {
+        try {
+            // 사용자 데이터 조회
+            User user = userRepository.findById(userid).orElse(null);
+            if (user == null) {
+                return false;
+            }
+            int pointsToAdd = 50;
+            int currentPoints = user.getPoints();
+            user.setPoints(currentPoints + pointsToAdd);
+            // 사용자 정보 업데이트
+            userRepository.save(user);
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

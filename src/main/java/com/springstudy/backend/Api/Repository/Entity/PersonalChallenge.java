@@ -30,5 +30,4 @@ public class PersonalChallenge {
 
     @Column(name = "creator_id", nullable = false)
     private Long creatorId;
-
 }
