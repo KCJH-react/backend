@@ -111,10 +111,10 @@ public class ChallengeController {
     //개인 챌린지용
     @PostMapping("/personalComplete")
     public ResponseEntity<Response<Boolean>> personalComplete(
-            @RequestParam Long userId) {
+            @RequestParam Long userid) {
 
         // 챌린지 완료 처리
-        boolean isCompleted = challengeService.addPointsToUser(userId);
+        boolean isCompleted = challengeService.addPointsToUser(userid);
 
         if (isCompleted) {
             return ResponseBuilder.<Boolean>create()

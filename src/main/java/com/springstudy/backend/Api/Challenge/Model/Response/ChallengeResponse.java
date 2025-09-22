@@ -37,7 +37,7 @@ public class ChallengeResponse {
                 this.reason,
                 this.content,
                 userId,
-                true //일시적으로 false 세팅
+                false //일시적으로 false 세팅
         );
     }
 
