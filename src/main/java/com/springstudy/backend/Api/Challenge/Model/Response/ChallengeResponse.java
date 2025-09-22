@@ -29,17 +29,17 @@ public class ChallengeResponse {
     private String reason;
 
 
-    public Challenge toEntity(Long userId) {
-        return new Challenge(
-                null,
-                this.difficult,
-                this.getDuration(),
-                this.reason,
-                this.content,
-                userId,
-                false //일시적으로 false 세팅
-        );
-    }
+//    public Challenge toEntity(Long userId) {
+//        return new Challenge(
+//                null,
+//                this.difficult,
+//                this.getDuration(),
+//                this.reason,
+//                this.content,
+//                userId,
+//                false
+//        );
+//    }
 
     public int getDuration() {
         if (durationRaw == null) return 0;

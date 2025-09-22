@@ -89,7 +89,7 @@ public class ChallengeService {
     }
 
     public List<Challenge> getSuccessChallenges(Long userId) {
-        return challengeRepository.findByUseridAndSuccessTrue(userId);
+        return challengeRepository.findByUserIdAndSuccessTrue(userId);
     }
 
     

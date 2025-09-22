@@ -3,7 +3,7 @@ package com.springstudy.backend.Api.Repository.Entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.springstudy.backend.Common.Type.Challenge;
+import com.springstudy.backend.Api.Repository.Entity.Challenge;
 import com.springstudy.backend.Common.Type.Sex;
 import jakarta.persistence.*;
 import lombok.*;
@@ -72,4 +72,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User_Challenge> userChallenges = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Challenge> challenges = new ArrayList<>();
 }

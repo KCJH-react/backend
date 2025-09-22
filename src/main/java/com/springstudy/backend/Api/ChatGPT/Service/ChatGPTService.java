@@ -20,6 +20,7 @@ import com.springstudy.backend.Common.ResponseBuilder;
 import com.springstudy.backend.Error;
 import com.springstudy.backend.ErrorResponsev2;
 import com.springstudy.backend.Response;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -48,7 +49,17 @@ public class ChatGPTService {
     private final AuthService authService;
 
     public Challenge saveChallenge(ChallengeResponse response, Long userId) {
-        Challenge challenge = response.toEntity(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 유저를 찾을 수 없습니다: " + userId));
+
+        Challenge challenge = Challenge.builder()
+                .content(response.getContent())
+                .difficulty(response.getDifficult())
+                .duration(response.getDuration())
+                .reason(response.getReason())
+                .success(false)
+                .user(user)
+                .build();
         return challengeRepository.save(challenge);
     }
 
