@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ChallengeRepository extends JpaRepository<Challenge,Long> {
-    List<Challenge> findByUseridAndSuccessTrue(Long userId);
+    List<Challenge> findByUserIdAndSuccessTrue(Long userId);
 
     @Query("SELECT c FROM Challenge c " +
-            "WHERE c.userid = :userId " +
+            "WHERE c.user.id = :userId " +
             "AND c.createdAt BETWEEN :startOfDay AND :endOfDay " +
             "ORDER BY c.createdAt DESC")
     List<Challenge> findTodaysChallengesByUserId(@Param("userId") Long userId,

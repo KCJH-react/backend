@@ -25,7 +25,11 @@ public class Challenge extends BaseTimeEntity {
 
     private String content;
 
-    private Long userid;
+//    private Long userid;
 
     private Boolean success = false;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }

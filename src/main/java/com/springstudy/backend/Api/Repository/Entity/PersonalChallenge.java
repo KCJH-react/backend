@@ -22,7 +22,6 @@ public class PersonalChallenge {
     private String personalName;
     private String personalCompletionAction;
     private Long personalDuration;
-    private String personalIcon;
     private String personalCategory;
 
     // 이 챌린지에 '참여'하는 관계 (1:N)
@@ -31,5 +30,4 @@ public class PersonalChallenge {
 
     @Column(name = "creator_id", nullable = false)
     private Long creatorId;
-
 }
