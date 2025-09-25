@@ -1,11 +1,15 @@
 package com.springstudy.backend.Api.Auth.Controller;
+import com.springstudy.backend.Api.Auth.Model.DTOS.PersonalChallengeDTO;
 import com.springstudy.backend.Api.Auth.Model.Request.*;
 import com.springstudy.backend.Api.Auth.Model.UserDTO;
+import com.springstudy.backend.Api.Auth.Service.AuthInfoService;
 import com.springstudy.backend.Api.Auth.Service.AuthService;
 import com.springstudy.backend.Api.Auth.Service.EmailService;
 import com.springstudy.backend.Api.Repository.Entity.User;
 import com.springstudy.backend.Api.Repository.Entity.UserCategory;
+import com.springstudy.backend.Api.Repository.UserRepository;
 import com.springstudy.backend.Common.Responsev2.Response;
+import com.springstudy.backend.Common.Responsev3.ResponseV3;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/user")
@@ -24,6 +29,8 @@ import java.util.List;
 public class AuthControllerV1 {
     private final AuthService authService;
     public final EmailService emailService;
+    private final UserRepository userRepository;
+    private final AuthInfoService authInfoService;
 
     @GetMapping("")
     public ResponseEntity<Response<UserDTO>> get(@RequestParam Long userId) {
@@ -75,9 +82,8 @@ public class AuthControllerV1 {
         return authService.logout(request);
     }
 
-
-//    @GetMapping("/category/{id}")
-//    public ResponseEntity<Response<List<UserCategory>>> getCategory(@PathVariable Long id) {
-//        return authService.getCategory(id);
-//    }
+    @GetMapping("/private-challenge")
+    public ResponseEntity<ResponseV3<List<PersonalChallengeDTO>>> getChallenge(@RequestParam Long userId) {
+        return authInfoService.getChallenge(userId);
+    }
 }

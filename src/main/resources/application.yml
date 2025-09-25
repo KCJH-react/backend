@@ -16,6 +16,7 @@ spring:
         hbm2ddl:
           defer_foreign_key_constraints: true
         dialect: org.hibernate.dialect.MySQL8Dialect  # ??? ??
+        format_sql: true
     defer-datasource-initialization: true
   data:
     redis:
@@ -43,15 +44,19 @@ springdoc:
   swagger-ui:
     enabled: true
     operations-sorter: method
-token: # ??? ????
-  secret-key: "SECRET"
-  refresh-secret-key: "REFRESH_SECRET"
-  token-time: 300
-  refresh-token-time: 500
-#gemini:
-#  url: ${GEMINI}
+#token: # ??? ????
+#  secret-key: "SECRET"
+#  refresh-secret-key: "REFRESH_SECRET"
+#  token-time: 300
+#  refresh-token-time: 500
+
 firebase:
   bucketName: imgstorage-6ba5c.firebasestorage.app
 openai:
   model: ${MODEL}
   secret-key: ${GPT}
+
+logging:
+  level:
+    org.hibernate.SQL: debug         # 쿼리 출력
+    org.hibernate.orm.jdbc.bind: trace   # 바인딩된 값 출력
