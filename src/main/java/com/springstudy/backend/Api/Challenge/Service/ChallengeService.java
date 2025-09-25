@@ -138,7 +138,7 @@ public class ChallengeService {
             return ResponseBuilder.<PersonalChallenge>create()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .data(null)
-                    .errorResponsev2(com.springstudy.backend.Error.DATABASE_ERROR, "개인 챌린지 저장중 에러발생")
+                    .errorResponsev2(com.springstudy.backend.Common.Responsev2.Error.DATABASE_ERROR, "개인 챌린지 저장중 에러발생")
                     .build();
         }
     }

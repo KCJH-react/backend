@@ -32,18 +32,18 @@ public class GPTChallengeResponse {
     private String username;
     private List<com.springstudy.backend.Common.Type.Challenge> category;
 
-    public static GPTChallengeResponse fromEntity(Challenge challenge) {
-        if (challenge == null) {
-            return null;
-        }
-        return GPTChallengeResponse.builder()
-                .content(challenge.getContent())
-                .difficult(challenge.getDifficulty())
-                .duration(challenge.getDuration())
-                .reason(challenge.getReason())
-                .createdAt(challenge.getCreatedAt())
-                .success(challenge.getSuccess())
-                .build();
-    }
+//    public static GPTChallengeResponse fromEntity(Challenge challenge) {
+//        if (challenge == null) {
+//            return null;
+//        }
+//        return GPTChallengeResponse.builder()
+//                .content(challenge.getContent())
+//                .difficult(challenge.getDifficulty())
+//                .duration(challenge.getDuration())
+//                .reason(challenge.getReason())
+//                .createdAt(challenge.getCreatedAt())
+//                .success(challenge.getSuccess())
+//                .build();
+//    }
 
 }

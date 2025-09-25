@@ -217,7 +217,7 @@ public class ChatGPTService {
             return ResponseBuilder.<GPTChallengeResponse>create()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .data(null)
-                    .errorResponsev2(com.springstudy.backend.Error.PARSING_ERROR, "최신 챌린지 확인 중 에러 발생")
+                    .errorResponsev2(com.springstudy.backend.Common.Responsev2.Error.PARSING_ERROR, "최신 챌린지 확인 중 에러 발생")
                     .build();
         }
     }
