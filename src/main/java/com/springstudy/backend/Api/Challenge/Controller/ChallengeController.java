@@ -8,7 +8,7 @@ import com.springstudy.backend.Api.Challenge.Service.ChallengeService;
 import com.springstudy.backend.Api.Repository.Entity.Challenge;
 import com.springstudy.backend.Api.Repository.Entity.PersonalChallenge;
 import com.springstudy.backend.Common.ResponseBuilder;
-import com.springstudy.backend.Response;
+import com.springstudy.backend.Common.Responsev2.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
