@@ -1,7 +1,9 @@
 package com.springstudy.backend.Api.Auth.Service;
 
 import com.springstudy.backend.Api.Auth.Model.DTOS.PersonalChallengeDTO;
+import com.springstudy.backend.Api.Auth.Model.DTOS.RandomChallengeDTO;
 import com.springstudy.backend.Api.Challenge.Model.Response.PersonalChallengeDto;
+import com.springstudy.backend.Api.Repository.Entity.Challenge;
 import com.springstudy.backend.Api.Repository.Entity.PersonalChallenge;
 import com.springstudy.backend.Api.Repository.Entity.PrivateChallenge;
 import com.springstudy.backend.Api.Repository.Entity.User;
@@ -31,11 +33,12 @@ public class AuthInfoService {
     private final FirebaseService firebaseService;
     private final PersonalChallengeRepository personalChallengeRepository;
 
-    public ResponseEntity<ResponseV3<List<PersonalChallengeDTO>>> getChallenge(Long userid) {
+    public ResponseEntity<ResponseV3<List<PersonalChallengeDTO>>> getPersonalChallenge(Long userid) {
         // 회원 체크 - 개인 챌린지 불러오기
         Optional<User> userOptional = userRepository.findById(userid);
         if (userOptional.isEmpty()) {
             //예외처리
+            throw new RuntimeException("user not found");
         }
         List<PersonalChallenge> privateChallenges = userRepository.getPersonalChallengeByUserId(userid);
         List<PersonalChallengeDTO> personalChallengeDTOS = new ArrayList<>();
@@ -43,5 +46,20 @@ public class AuthInfoService {
             personalChallengeDTOS.add(new PersonalChallengeDTO(pc));
         }
         return ResponseEntity.ok(new ResponseV3(personalChallengeDTOS, LocalDateTime.now(), "개인 챌린지 불러오기 성공"));
+    }
+
+    public ResponseEntity<ResponseV3<List<RandomChallengeDTO>>> getRandomChallenge(Long userid) {
+        // 회원 체크 - 개인 챌린지 불러오기
+        Optional<User> userOptional = userRepository.findById(userid);
+        if (userOptional.isEmpty()) {
+            //예외처리
+            throw new RuntimeException("user not found");
+        }
+        List<Challenge> randomChallenges = userRepository.getRandomChallengeByUserId(userid);
+        List<RandomChallengeDTO> randomChallengeDTOs = new ArrayList<>();
+        for(Challenge rc : randomChallenges) {
+            randomChallengeDTOs.add(new RandomChallengeDTO(rc));
+        }
+        return ResponseEntity.ok(new ResponseV3(randomChallengeDTOs, LocalDateTime.now(), "개인 챌린지 불러오기 성공"));
     }
 }

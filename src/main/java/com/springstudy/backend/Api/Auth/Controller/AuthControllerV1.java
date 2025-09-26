@@ -1,5 +1,6 @@
 package com.springstudy.backend.Api.Auth.Controller;
 import com.springstudy.backend.Api.Auth.Model.DTOS.PersonalChallengeDTO;
+import com.springstudy.backend.Api.Auth.Model.DTOS.RandomChallengeDTO;
 import com.springstudy.backend.Api.Auth.Model.Request.*;
 import com.springstudy.backend.Api.Auth.Model.UserDTO;
 import com.springstudy.backend.Api.Auth.Service.AuthInfoService;
@@ -82,8 +83,12 @@ public class AuthControllerV1 {
         return authService.logout(request);
     }
 
-    @GetMapping("/private-challenge")
-    public ResponseEntity<ResponseV3<List<PersonalChallengeDTO>>> getChallenge(@RequestParam Long userId) {
-        return authInfoService.getChallenge(userId);
+    @GetMapping("/personal-challenge")
+    public ResponseEntity<ResponseV3<List<PersonalChallengeDTO>>> getPersonalChallenge(@RequestParam Long userId) {
+        return authInfoService.getPersonalChallenge(userId);
+    }
+    @GetMapping("/random-challenge")
+    public ResponseEntity<ResponseV3<List<RandomChallengeDTO>>> getRandomChallenge(@RequestParam Long userId) {
+        return authInfoService.getRandomChallenge(userId);
     }
 }

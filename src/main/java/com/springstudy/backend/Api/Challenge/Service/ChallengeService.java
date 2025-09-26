@@ -12,6 +12,7 @@ import com.springstudy.backend.Common.ResponseBuilder;
 import com.springstudy.backend.Common.Responsev2.ErrorResponsev2;
 import com.springstudy.backend.Common.Responsev2.Response;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ChallengeService {
 
@@ -135,6 +137,7 @@ public class ChallengeService {
 
 
         } catch (Exception e) {
+            log.error("개인챌린지 생성 실패 message: "+e.getMessage());
             return ResponseBuilder.<PersonalChallenge>create()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .data(null)
