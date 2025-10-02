@@ -2,22 +2,16 @@ package com.springstudy.backend.Api.Auth.Service;
 
 import com.springstudy.backend.Api.Auth.Model.DTOS.PersonalChallengeDTO;
 import com.springstudy.backend.Api.Auth.Model.DTOS.RandomChallengeDTO;
-import com.springstudy.backend.Api.Challenge.Model.Response.PersonalChallengeDto;
 import com.springstudy.backend.Api.Repository.Entity.Challenge;
 import com.springstudy.backend.Api.Repository.Entity.PersonalChallenge;
-import com.springstudy.backend.Api.Repository.Entity.PrivateChallenge;
 import com.springstudy.backend.Api.Repository.Entity.User;
 import com.springstudy.backend.Api.Repository.PersonalChallengeRepository;
-import com.springstudy.backend.Api.Repository.PrivateChallengeRepository;
 import com.springstudy.backend.Api.Repository.UserCategoryRepository;
 import com.springstudy.backend.Api.Repository.UserRepository;
 import com.springstudy.backend.Common.FirebaseService;
-import com.springstudy.backend.Common.RedisService;
 import com.springstudy.backend.Common.Responsev3.ResponseV3;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

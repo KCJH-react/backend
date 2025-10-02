@@ -7,7 +7,6 @@ import com.springstudy.backend.Api.Repository.Entity.UserCategory;
 import com.springstudy.backend.Api.Repository.Entity.User;
 import com.springstudy.backend.Api.Repository.Entity.UserCredential;
 import com.springstudy.backend.Api.Repository.Entity.User_UserCategory;
-import com.springstudy.backend.Api.Repository.PrivateChallengeRepository;
 import com.springstudy.backend.Api.Repository.UserCategoryRepository;
 import com.springstudy.backend.Api.Repository.UserRepository;
 import com.springstudy.backend.Common.*;
