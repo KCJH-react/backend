@@ -7,15 +7,15 @@ import lombok.Data;
 public class PersonalChallengeDTO {
     private Long personalId;
     private String personalName;
-    private Long personalDuration;
+    private int personalDuration;
     private String personalCategory;
     private String personalCompletionAction;
 
     public PersonalChallengeDTO(PersonalChallenge pc) {
         this.personalId = pc.getPersonalId();
-        this.personalName = pc.getPersonalName();
-        this.personalDuration = pc.getPersonalDuration();
-        this.personalCategory = pc.getPersonalCategory();
-        this.personalCompletionAction = pc.getPersonalCompletionAction();
+        this.personalName = pc.getPersonalChallengeName();
+        this.personalDuration = pc.getDuration();
+        this.personalCategory = pc.getPersonalChallengeCategory();
+        this.personalCompletionAction = pc.getContent();
     }
 }

@@ -13,16 +13,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class    PersonalChallenge {
+public class PersonalChallenge {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long personalId;
 
-    private String personalName;
-    private String personalCompletionAction;
-    private Long personalDuration;
-    private String personalCategory;
+    private String personalChallengeName;
+    private String content;
+    private int duration;
+    private String personalChallengeCategory;
 
     // 이 챌린지에 '참여'하는 관계 (1:N)
     @OneToMany(mappedBy = "personalChallenge", cascade = CascadeType.ALL, orphanRemoval = true)

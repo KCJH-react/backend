@@ -18,15 +18,9 @@ public class Challenge extends BaseTimeEntity {
     private Long id;
 
     private String difficulty;
-
     private int duration;
-
     private String reason;
-
     private String content;
-
-//    private Long userid;
-
     private Boolean success = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
