@@ -77,7 +77,7 @@ public class PersonalChallengeController {
 
 
     //개인 챌린지용
-    @PostMapping("/PersonalComplete")
+    @PostMapping("/personalComplete")
     public ResponseEntity<Response<Boolean>> personalComplete(
             @RequestParam Long userid) {
 
