@@ -1,9 +1,11 @@
 package com.springstudy.backend.Api.Challenge.RandomChallenge.Model.Response;
 
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 //GPT에게 답변을 수신받는용도로 사용중입니다.
-
+@NoArgsConstructor
 public class ChatGPTResponseDTO {
     private List<Choice> choices;
 

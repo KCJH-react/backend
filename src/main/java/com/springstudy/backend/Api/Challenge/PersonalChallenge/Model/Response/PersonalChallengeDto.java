@@ -2,8 +2,11 @@ package com.springstudy.backend.Api.Challenge.PersonalChallenge.Model.Response;
 
 import com.springstudy.backend.Api.Repository.Entity.PersonalChallenge;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
+
 public class PersonalChallengeDto {
     private Long personalId;
     private String personalName;
