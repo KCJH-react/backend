@@ -5,9 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication(scanBasePackages = "com.springstudy.backend")
-//@EntityScan("com.springstudy.backend.Api.Repository.Entity")
-//@EnableJpaRepositories("com.springstudy.backend.Api.Repository")
-//@EnableJpaAuditing
 @EnableJpaAuditing
 public class BackendApplication {
 
